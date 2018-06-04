@@ -13,7 +13,7 @@ class CreateAttendanceLogs extends AbstractMigration
     public function change()
     {
         $table = $this->table('attendance_logs');
-        $table->addColumn('date', 'timestamp', [
+        $table->addColumn('log_timestamp', 'datetime', [
             'default' => null,
             'null' => false,
         ]);
