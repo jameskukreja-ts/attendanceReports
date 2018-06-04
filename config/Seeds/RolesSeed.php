@@ -19,7 +19,7 @@ class RolesSeed extends AbstractSeed
     public function run()
     {
         $data = [
-            'name'=> 'admin',
+            'name'=> 'Admin',
             'label'=>'Admin',
             'created'=>date("Y-m-d H:i:s"),
             'modified'=>date("Y-m-d H:i:s")
