@@ -19,8 +19,10 @@ class RolesSeed extends AbstractSeed
     public function run()
     {
         $data = [
-            'name'=> 'Admin',
-            'label'=>'Admin'
+            'name'=> 'admin',
+            'label'=>'Admin',
+            'created'=>date("Y-m-d H:i:s"),
+            'modified'=>date("Y-m-d H:i:s")
         ];
 
         $table = $this->table('roles');
