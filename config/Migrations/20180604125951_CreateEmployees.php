@@ -13,22 +13,22 @@ class CreateEmployees extends AbstractMigration
     public function change()
     {
         $table = $this->table('employees');
-        $table->addColumn('fname', 'string', [
+        $table->addColumn('first_name', 'string', [
             'default' => null,
             'limit' => 255,
             'null' => false,
         ]);
-        $table->addColumn('lname', 'string', [
+        $table->addColumn('last_name', 'string', [
             'default' => null,
             'limit' => 255,
             'null' => false,
         ]);
-        $table->addColumn('officeId', 'string', [
+        $table->addColumn('office_id', 'string', [
             'default' => null,
             'limit' => 255,
             'null' => false,
         ]);
-        $table->addColumn('attendanceUserKey', 'integer', [
+        $table->addColumn('machine_generated_id', 'integer', [
             'default' => null,
             'limit' => 11,
             'null' => false,

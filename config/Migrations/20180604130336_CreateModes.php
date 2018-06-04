@@ -22,7 +22,7 @@ class CreateModes extends AbstractMigration
             'default' => null,
             'null' => false,
         ]);
-        $table->addColumn('attendanceModeKey', 'integer', [
+        $table->addColumn('machine_mode_id', 'integer', [
             'default' => null,
             'limit' => 11,
             'null' => false,
