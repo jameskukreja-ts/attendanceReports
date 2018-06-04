@@ -1,0 +1,13 @@
+vendor/*
+!vendor/empty
+config/app.php
+config/bootstrap.php
+tmp/*
+!tmp/empty
+logs/*
+!logs/empty
+config/Migrations/schema-dump-default.lock
+webroot/uploads/*
+!webroot/uploads/empty
+composer.lock
+config/bootstrap.php
