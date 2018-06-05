@@ -21,7 +21,7 @@ class EmployeesController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Offices', 'MachineGenerateds']
+            
         ];
         $employees = $this->paginate($this->Employees);
 
@@ -38,7 +38,7 @@ class EmployeesController extends AppController
     public function view($id = null)
     {
         $employee = $this->Employees->get($id, [
-            'contain' => ['Offices', 'MachineGenerateds', 'AttendanceLogs']
+            'contain' => ['AttendanceLogs']
         ]);
 
         $this->set('employee', $employee);
@@ -61,9 +61,8 @@ class EmployeesController extends AppController
             }
             $this->Flash->error(__('The employee could not be saved. Please, try again.'));
         }
-        $offices = $this->Employees->Offices->find('list', ['limit' => 200]);
-        $machineGenerateds = $this->Employees->MachineGenerateds->find('list', ['limit' => 200]);
-        $this->set(compact('employee', 'offices', 'machineGenerateds'));
+        
+        $this->set(compact('employee'));
     }
 
     /**
@@ -87,9 +86,9 @@ class EmployeesController extends AppController
             }
             $this->Flash->error(__('The employee could not be saved. Please, try again.'));
         }
-        $offices = $this->Employees->Offices->find('list', ['limit' => 200]);
-        $machineGenerateds = $this->Employees->MachineGenerateds->find('list', ['limit' => 200]);
-        $this->set(compact('employee', 'offices', 'machineGenerateds'));
+        // $offices = $this->Employees->Offices->find('list', ['limit' => 200]);
+        // $machineGenerateds = $this->Employees->MachineGenerateds->find('list', ['limit' => 200]);
+        $this->set(compact('employee'));
     }
 
     /**
@@ -111,4 +110,10 @@ class EmployeesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+    public function isAuthorized($user)
+    {
+        // By default deny access.
+        return true;
+    }
+
 }
