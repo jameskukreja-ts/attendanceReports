@@ -39,13 +39,13 @@ class AppController extends Controller
      */
     public function initialize()
     {
-        parent::initialize();
+       parent::initialize();
 
-        $this->loadComponent('RequestHandler', [
-            'enableBeforeRedirect' => false,
-        ]);
+        $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+
         $this->loadComponent('Auth', [
+            'authorize' => 'Controller',
             'authenticate' => [
                 'Form' => [
                     'fields' => [
@@ -59,12 +59,11 @@ class AppController extends Controller
                 'action' => 'login'
             ],
              // If unauthorized, return them to page they were just on
-            //'unauthorizedRedirect' => $this->referer()
+            'unauthorizedRedirect' => $this->referer()
         ]);
 
         // Allow the display action so our PagesController
         // continues to work. Also enable the read only actions.
-        $this->Auth->allow(['view', 'index']);
 
         /*
          * Enable the following components for recommended CakePHP security settings.

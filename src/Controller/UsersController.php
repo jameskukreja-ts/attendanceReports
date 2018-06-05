@@ -52,6 +52,7 @@ class UsersController extends AppController
     public function add()
     {
         $user = $this->Users->newEntity();
+        $user['role_id']=1;
         if ($this->request->is('post')) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
@@ -77,6 +78,7 @@ class UsersController extends AppController
         $user = $this->Users->get($id, [
             'contain' => []
         ]);
+        
         if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
@@ -111,22 +113,32 @@ class UsersController extends AppController
     }
 
     public function login()
-    {
+{
+    if($this->Auth->user()){
+        return $this->redirect($this->Auth->redirectUrl(['controller' => 'Employees', 'action' => 'index']));
+           
+    }else{
         if ($this->request->is('post')) {
             $user = $this->Auth->identify();
-
             if ($user) {
-                $this->Auth->setUser($user);
-                return $this->redirect($this->Auth->redirectUrl());
-            }
-            $this->Flash->error('Your username or password is incorrect.');
+                
+                    $this->Auth->setUser($user);
+                    return $this->redirect($this->Auth->redirectUrl(['controller' => 'Employees', 'action' => 'index']));
+                }
+
+            $this->Flash->error('Your username or password is incorrect.');  
+            return $this->redirect($this->Auth->redirectUrl(['controller' => 'Users', 'action' => 'login']));
+            
         }
+    $this->Flash->error('Your username or password is incorrect.');
     }
+    
+}
     
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['logout','index']);
+        $this->Auth->allow(['logout']);
     }
 
     public function logout()
@@ -138,7 +150,7 @@ class UsersController extends AppController
     public function isAuthorized($user)
     {
         // By default deny access.
-        return false;
+        return true;
     }
 
 

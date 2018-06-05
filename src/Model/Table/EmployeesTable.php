@@ -43,14 +43,14 @@ class EmployeesTable extends Table
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsTo('Offices', [
-            'foreignKey' => 'office_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('MachineGenerateds', [
-            'foreignKey' => 'machine_generated_id',
-            'joinType' => 'INNER'
-        ]);
+        // $this->belongsTo('Offices', [
+        //     'foreignKey' => 'office_id',
+        //     'joinType' => 'INNER'
+        // ]);
+        // $this->belongsTo('MachineGenerateds', [
+        //     'foreignKey' => 'machine_generated_id',
+        //     'joinType' => 'INNER'
+        // ]);
         $this->hasMany('AttendanceLogs', [
             'foreignKey' => 'employee_id'
         ]);
@@ -79,6 +79,17 @@ class EmployeesTable extends Table
             ->maxLength('last_name', 255)
             ->requirePresence('last_name', 'create')
             ->notEmpty('last_name');
+        $validator
+            ->scalar('office_id')
+            ->maxLength('office_id', 255)
+            ->requirePresence('office_id', 'create')
+            ->notEmpty('office_id');
+
+        $validator
+            ->scalar('machine_generated_id')
+            
+            ->requirePresence('machine_generated_id', 'create')
+            ->notEmpty('machine_generated_id');
 
         return $validator;
     }
@@ -92,8 +103,8 @@ class EmployeesTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['office_id'], 'Offices'));
-        $rules->add($rules->existsIn(['machine_generated_id'], 'MachineGenerateds'));
+        // $rules->add($rules->existsIn(['office_id'], 'Offices'));
+        // $rules->add($rules->existsIn(['machine_generated_id'], 'MachineGenerateds'));
 
         return $rules;
     }
