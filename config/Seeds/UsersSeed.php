@@ -1,10 +1,11 @@
 <?php
 use Migrations\AbstractSeed;
+use Cake\Auth\DefaultPasswordHasher;
 
 /**
- * Roles seed.
+ * Users seed.
  */
-class RolesSeed extends AbstractSeed
+class UsersSeed extends AbstractSeed
 {
     /**
      * Run Method.
@@ -17,15 +18,20 @@ class RolesSeed extends AbstractSeed
      * @return void
      */
     public function run()
-    {
+    {   
+        $hasher = new DefaultPasswordHasher();
         $data = [
-            'name'=> 'Admin',
-            'label'=>'Admin',
+            'first_name'=> 'admin',
+            'last_name'=> 'admin',
+            'username'=>'admin',
+            'password'   =>$hasher->hash('12345678'),
+            'email'=> 'admin@admin.com',
+            'role_id' => 1,
             'created'=>date("Y-m-d H:i:s"),
             'modified'=>date("Y-m-d H:i:s")
         ];
 
-        $table = $this->table('roles');
+        $table = $this->table('users');
         $table->insert($data)->save();
     }
 }

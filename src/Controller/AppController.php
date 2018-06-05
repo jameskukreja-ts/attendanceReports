@@ -45,6 +45,26 @@ class AppController extends Controller
             'enableBeforeRedirect' => false,
         ]);
         $this->loadComponent('Flash');
+        $this->loadComponent('Auth', [
+            'authenticate' => [
+                'Form' => [
+                    'fields' => [
+                        'username' => 'email',
+                        'password' => 'password'
+                    ]
+                ]
+            ],
+            'loginAction' => [
+                'controller' => 'Users',
+                'action' => 'login'
+            ],
+             // If unauthorized, return them to page they were just on
+            //'unauthorizedRedirect' => $this->referer()
+        ]);
+
+        // Allow the display action so our PagesController
+        // continues to work. Also enable the read only actions.
+        $this->Auth->allow(['view', 'index']);
 
         /*
          * Enable the following components for recommended CakePHP security settings.
