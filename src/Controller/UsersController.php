@@ -114,6 +114,7 @@ class UsersController extends AppController
 
     public function login()
 {
+    $this->viewBuilder()->layout('login-default');
     if($this->Auth->user()){
         return $this->redirect($this->Auth->redirectUrl(['controller' => 'Employees', 'action' => 'index']));
            
@@ -130,7 +131,7 @@ class UsersController extends AppController
             return $this->redirect($this->Auth->redirectUrl(['controller' => 'Users', 'action' => 'login']));
             
         }
-    $this->Flash->error('Your username or password is incorrect.');
+    
     }
     
 }

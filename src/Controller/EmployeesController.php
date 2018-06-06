@@ -2,7 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\I18n\Time;
 /**
  * Employees Controller
  *
@@ -115,5 +115,31 @@ class EmployeesController extends AppController
         // By default deny access.
         return true;
     }
+
+    public function attendanceReport(){
+
+        $this->viewBuilder()->layout('login-default');
+        $this->loadModel('AttendanceLogs');
+        
+        $report=[];
+        
+        if ($this->request->is('post')) {
+            $data=$this->request->getData();
+            $employee=$this->Employees->findByOfficeId($data['office_id'])->first();
+           
+            if($employee){
+                $report=$this->AttendanceLogs
+                             ->findByEmployeeId($employee->id)
+                             ->contain('Employees')
+                             ->where(['log_timestamp >='=>$data['start_date'],'log_timestamp <='=>$data['end_date']])
+                             ->toArray();    
+            }
+             
+        }
+       
+        $this->set(compact('report'));
+       
+    }
+   
 
 }
