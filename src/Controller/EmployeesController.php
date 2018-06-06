@@ -140,8 +140,9 @@ class EmployeesController extends AppController
             $attendanceCsv = $this->AttendanceCsvs->patchEntity($attendanceCsv, $data);
             if(!$this->AttendanceCsvs->save($attendanceCsv)){
                 $this->Flash->error(__("not saved"));
-            }
+            }else{
             $this->Flash->success(__("1: Csv File Saved in Database"));
+            }
             $headings=['employee_id', 'timestamp', 'a', 'b', 'mode_id','c'];
             $fileData =$this->Shared->getCsvData('AttendanceLogs',$attendanceCsv->full_file_path, $headings);
             
@@ -157,20 +158,35 @@ class EmployeesController extends AppController
                     Log::write("debug","Machine generated id ".$row['employee_id']." does not have an associated employee on db.");
                     continue;
                 }
-                
-                $attendanceLogs[]=[
+                $data = [
                     'log_timestamp'=> (new FrozenTime($row['timestamp'])),
                     'employee_id'=> $employeeIds[$row['employee_id']],
                     'mode_id'=> $modes[$row['mode_id']]
                 ];
-                
-            }
-            $attendanceLogs=$this->AttendanceLogs->newEntities($attendanceLogs);
+
+                $attendanceLog =$this->AttendanceLogs->find()->where($data)->first();
+                if($attendanceLog){
+                    Log::write("debug",'Value already exists in Database.');
+                    continue;
+                }
+                $attendanceLogs[]= $data;
             
-            if(!$this->AttendanceLogs->saveMany($attendanceLogs)){
-                $this->Flash->error(__("not saved"));
             }
-            $this->Flash->success(__("2: Logs Saved"));
+            if(empty($attendanceLogs)){
+                Log::write("debug","No value to update in logs");
+                $this->Flash->default(__("No new logs present in the provided file"));
+
+            }else{
+
+                $attendanceLogs=$this->AttendanceLogs->newEntities($attendanceLogs);
+                
+                if(!$this->AttendanceLogs->saveMany($attendanceLogs)){
+                    $this->Flash->error(__("Logs not saved"));
+                }else{
+
+                $this->Flash->success(__("2: Logs have been updated."));
+                }
+            }
         }
         $this->set(compact('attendanceCsv'));
     }
@@ -199,6 +215,7 @@ class EmployeesController extends AppController
         $this->set(compact('report'));
        
     }
+    
    
 
 }
