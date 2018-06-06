@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Core\Configure;
 
 /**
  * Employees Controller
@@ -114,6 +115,43 @@ class EmployeesController extends AppController
     {
         // By default deny access.
         return true;
+    }
+    
+    public function syncAttendance()
+    {
+        $this->loadModel('Modes');
+        $this->loadComponent('Shared');
+        $this->loadModel('AttendanceCsvs');
+        $attendanceCsv = $this->AttendanceCsvs->newEntity();
+        if ($this->request->is('post')) {
+            $data=$this->request->getData();
+            $attendanceCsv = $this->AttendanceCsvs->patchEntity($attendanceCsv, $data);
+            if(!$this->AttendanceCsvs->save($attendanceCsv)){
+                $this->Flash->error(__("not saved"));
+            }
+            $this->Flash->success(__("Saved"));
+            $headings=['employee_id', 'timestamp', 'a', 'b', 'mode_id','c'];
+            $fileData =$this->Shared->getCsvData('AttendanceLogs',$attendanceCsv->full_file_path, $headings);
+            
+
+            $employeeIds=$this->Employees->find()->combine('machine_generated_id','id')->toArray();
+            $modes=$this->Modes->find()->combine('machine_mode_id','id')->toArray();
+            foreach($filedata as $row){
+                //Remove this line when you have added employees.
+                if(!isset($employeeIds[$row['employee_id']])){
+                    Log::write("Machine generated id ".$row['employee_id']." does not have an associated employee on db.");
+                    continue;
+                }
+
+                $employees[]=[
+                    'log_timestamp'=> $row['timestamp'],
+                    'employee_id'=> $employeeIds[$row['employee_id']],
+                    'mode_id'=> $modes[$row['mode_id']]
+                ];
+            }
+
+        }
+        $this->set(compact('attendanceCsv'));
     }
 
 }

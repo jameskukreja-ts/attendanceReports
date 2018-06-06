@@ -2,7 +2,7 @@
 namespace App\Model\Entity;
 
 use Cake\ORM\Entity;
-
+use Cake\Routing\Router;
 /**
  * Employee Entity
  *
@@ -42,3 +42,4 @@ class Employee extends Entity
         'attendance_logs' => true
     ];
 }
+
