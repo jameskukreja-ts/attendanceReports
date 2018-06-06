@@ -7,15 +7,15 @@
 
 <div class="employees index large-12 medium-8 columns content">
     <h3><?= __('Employees') ?></h3>
-    <?= $this->Html->link(__('Add Employee'), ['controller' => 'Employees', 'action' => 'add'],['class'=>'button']) ?>
+    <?= $this->Html->link(__('Add Employee'), ['controller' => 'Employees', 'action' => 'add'],['class'=>'button right']) ?>
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('first_name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('last_name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('office_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('machine_generated_id') ?></th>
+                <th scope="col"><?= 'ID' ?></th>
+                <th scope="col"><?= 'First Name' ?></th>
+                <th scope="col"><?= 'Last Name' ?></th>
+                <th scope="col"><?= 'Office ID' ?></th>
+                <th scope="col"><?= 'Machine Generated ID' ?></th>
                 <!-- <th scope="col"><?= $this->Paginator->sort('created') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('modified') ?></th> -->
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -35,6 +35,8 @@
                     <?= $this->Html->link(__('View'), ['action' => 'view', $employee->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $employee->id]) ?>
                     <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $employee->id], ['confirm' => __('Are you sure you want to delete # {0}?', $employee->id)]) ?>
+                    <br>
+                    <?= $this->Html->link(__('View Attendance Report'), ['action' => 'employeeReport', $employee->id]) ?>
                 </td>
             </tr>
             <?php endforeach; ?>

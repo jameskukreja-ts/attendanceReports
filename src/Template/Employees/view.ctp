@@ -37,7 +37,7 @@
             <td><?= h($employee->modified) ?></td>
         </tr>
     </table>
-    <div class="related">
+    <!-- <div class="related">
         <h4><?= __('Related Attendance Logs') ?></h4>
         <?php if (!empty($employee->attendance_logs)): ?>
         <table cellpadding="0" cellspacing="0">
@@ -67,5 +67,5 @@
             <?php endforeach; ?>
         </table>
         <?php endif; ?>
-    </div>
+    </div> -->
 </div>

@@ -522,3 +522,8 @@ table td {
     vertical-align: top;
     word-break: break-all;
 }
+.btn-warning {
+  color: #fff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}

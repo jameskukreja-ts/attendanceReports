@@ -136,8 +136,21 @@ class EmployeesController extends AppController
             }
              
         }
-       
         $this->set(compact('report'));
+       
+    }
+    public function employeeReport($id = null){
+        $this->loadModel('AttendanceLogs');
+        $this->loadModel('Modes');
+
+        $employee = $this->Employees->get($id, [ ]);
+        $attendanceLogs=$this->AttendanceLogs
+                             ->findByEmployeeId($id)
+                             ->order(['log_timestamp' => 'DESC'])
+                             ->toArray();  
+        
+        $this->set('employee', $employee);
+        $this->set('attendanceLogs', $attendanceLogs);
        
     }
    
