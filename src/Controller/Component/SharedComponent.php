@@ -3,6 +3,8 @@ namespace App\Controller\Component;
 
 use Cake\Controller\Component;
 use Cake\Controller\ComponentRegistry;
+use Cake\Collection\Collection;
+use Cake\Utility\Text;
 
 /**
  * Shared component
@@ -17,24 +19,17 @@ class SharedComponent extends Component
      */
     protected $_defaultConfig = [];
 
-    public function getCsvData($tableName, $fileName, $headings = []){
+    public function getCsvData($tableName, $filePath, $headings = []){
         
-        while(in_array($fileName, [null, false, ""])){
-          
-          $this->out('Filename not entered please try again.');
-          $fileName = $this->in("Please enter the file name without the extension for ".$tableName);
-        }
-
-        $fileName = $fileName.'.csv';
-        if (!file_exists($fileName) ) {
+      
+        if (!file_exists($filePath) ) {
             
-            $this->out('File not found.');
             return false;
         }        
         ini_set('auto_detect_line_endings', true);
-        $fp = fopen($fileName,'r');
+        $fp = fopen($filePath,'r');
         $data = array();
-        while (($row = fgetcsv($fp)) !== FALSE) {
+        while (($row = fgetcsv($fp, 0, "\t")) !== FALSE) {
           if(str_replace(" ", "", implode('', $row)) == ''){
             continue;
           }
@@ -49,7 +44,7 @@ class SharedComponent extends Component
         foreach ($headings as $key => $value) {
             $headings[$key] = strtolower(Text::slug($value, '_'));
         }
-        
+      
         $tempData = []; 
         foreach ($data as $key => $value) {
 
@@ -61,7 +56,7 @@ class SharedComponent extends Component
         }
         if(empty($tempData)){
             
-            $this->out('No Data found in the uploaded file.');
+           // $this->out('No Data found in the uploaded file.');
             return false;
         }
 

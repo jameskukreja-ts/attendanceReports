@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Core\Configure;
+
 
 /**
  * Employees Model
@@ -42,18 +44,10 @@ class EmployeesTable extends Table
         $this->setPrimaryKey('id');
 
         $this->addBehavior('Timestamp');
-
-        // $this->belongsTo('Offices', [
-        //     'foreignKey' => 'office_id',
-        //     'joinType' => 'INNER'
-        // ]);
-        // $this->belongsTo('MachineGenerateds', [
-        //     'foreignKey' => 'machine_generated_id',
-        //     'joinType' => 'INNER'
-        // ]);
         $this->hasMany('AttendanceLogs', [
             'foreignKey' => 'employee_id'
         ]);
+        
     }
 
     /**
