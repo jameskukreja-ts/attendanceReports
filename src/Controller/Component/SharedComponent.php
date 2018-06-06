@@ -24,8 +24,6 @@ class SharedComponent extends Component
       
         if (!file_exists($filePath) ) {
             
-           // $this->out('File not found.');
-            pr('here ');
             return false;
         }        
         ini_set('auto_detect_line_endings', true);

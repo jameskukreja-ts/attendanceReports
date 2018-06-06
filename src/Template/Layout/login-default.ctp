@@ -35,25 +35,20 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 </head>
 <body>
     <nav class="top-bar expanded" data-topbar role="navigation">
-        <ul class="title-area large-3 medium-4 columns">
+        <ul class="title-area large-12 medium-4 columns">
             <li class="name">
-                <h1><a href=""><?= $this->fetch('title') ?></a></h1>
+                
             </li>
         </ul>
-        <div class="top-bar-section">
-            <ul class="right">
-
-                <?= $this->html->link(__('Logout'), ['controller' => 'Users', 'action' => 'logout'],['class'=>'button']); ?>
-                <!-- <li><a target="_blank" href="https://book.cakephp.org/3.0/">Documentation</a></li>
-                <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li> -->
-            </ul>
-        </div>
+        
     </nav>
-    <?= $this->element('side-nav') ?>
+   
     <?= $this->Flash->render() ?>
+    
     <div class="container clearfix">
         <?= $this->fetch('content') ?>
     </div>
+
     <footer>
     </footer>
 </body>
