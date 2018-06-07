@@ -28,6 +28,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 
     <?= $this->Html->css('base.css') ?>
     <?= $this->Html->css('style.css') ?>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
 
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
@@ -43,7 +44,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         <div class="top-bar-section">
             <ul class="right">
 
-                <?= $this->html->link(__('Logout'), ['controller' => 'Users', 'action' => 'logout'],['class'=>'button']); ?>
+                <?= $this->html->link(__('Logout'), ['controller' => 'Users', 'action' => 'logout'],['class'=>'button btn-warning']); ?>
                 <!-- <li><a target="_blank" href="https://book.cakephp.org/3.0/">Documentation</a></li>
                 <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li> -->
             </ul>

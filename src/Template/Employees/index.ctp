@@ -11,7 +11,7 @@
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
-                <th scope="col"><?= 'ID' ?></th>
+                <th scope="col"><?= 'S. No.' ?></th>
                 <th scope="col"><?= 'First Name' ?></th>
                 <th scope="col"><?= 'Last Name' ?></th>
                 <th scope="col"><?= 'Office ID' ?></th>
@@ -22,9 +22,9 @@
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($employees as $employee): ?>
+            <?php $id=1; foreach ($employees as $employee): ?>
             <tr>
-                <td><?= $this->Number->format($employee->id) ?></td>
+                <td><?= $this->Number->format($id++) ?></td>
                 <td><?= h($employee->first_name) ?></td>
                 <td><?= h($employee->last_name) ?></td>
                 <td><?= h($employee->office_id) ?></td>
@@ -32,11 +32,11 @@
                 <!-- <td><?= h($employee->created) ?></td>
                 <td><?= h($employee->modified) ?></td> -->
                 <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $employee->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $employee->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $employee->id], ['confirm' => __('Are you sure you want to delete # {0}?', $employee->id)]) ?>
-                    <br>
-                    <?= $this->Html->link(__('View Attendance Report'), ['action' => 'employeeReport', $employee->id]) ?>
+                    <!-- //$this->Html->link(__('View'), ['action' => 'view', $employee->id]) ?> -->
+                    <?= $this->Html->link(__('  '), ['action' => 'employeeReport', $employee->id],['class'=>'fa fa-eye fa-lg']) ?>
+                    <?= $this->Html->link(__('  '), ['action' => 'edit', $employee->id],['class'=>'fa fa-edit fa-lg']) ?>
+                    <?= $this->Form->postLink(__(''), ['action' => 'delete', $employee->id],['class'=>'fa fa-trash fa-lg'], ['confirm' => __('Are you sure you want to delete # {0}?', $employee->id)]) ?>
+                    
                 </td>
             </tr>
             <?php endforeach; ?>

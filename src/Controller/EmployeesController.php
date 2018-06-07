@@ -4,7 +4,9 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\I18n\FrozenTime;
+use Cake\I18n\Time;
 use Cake\Log\Log;
+use Cake\Collection\Collection;
 
 
 /**
@@ -39,13 +41,33 @@ class EmployeesController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
-    {
-        $employee = $this->Employees->get($id, [
-            'contain' => ['AttendanceLogs']
-        ]);
+    public function view($date, $id)
+    {   
+        if(!$this->Auth->user()){
+            $this->viewBuilder()->layout('login-default');
+        }
+        
+        $this->loadModel('AttendanceLogs');
+        $report=$this->AttendanceLogs
+                             ->findByEmployeeId($id)
+                             ->contain(['Modes'])
+                             ->toArray(); 
+        
+        $collection = new Collection($report); 
+        $newCollection = $collection->map(function($value, $key){
 
-        $this->set('employee', $employee);
+            $timestamp = strtotime($value->log_timestamp);
+            $date=date('d-m-Y' ,$timestamp) ; 
+            $time=date('H-i-s' ,$timestamp) ; 
+            return  ['date' => $date, 'time' => $time,'mode'=>$value->mode->name];   
+        });
+
+
+
+        $new=$newCollection->groupBy('date')->toArray();
+        $details=$new[$date];
+        $this->set(compact('details'));
+
     }
 
     /**
@@ -114,6 +136,13 @@ class EmployeesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
+    public function initialize()
+    {
+        parent::initialize();
+        $this->Auth->allow(['attendanceReport','view']);
+    }
+
     public function isAuthorized($user)
     {
         // By default deny access.
@@ -138,6 +167,7 @@ class EmployeesController extends AppController
             
             $attendanceLogs=[];
             $attendanceCsv = $this->AttendanceCsvs->patchEntity($attendanceCsv, $data);
+    
             if(!$this->AttendanceCsvs->save($attendanceCsv)){
                 $this->Flash->error(__("not saved"));
             }
@@ -177,41 +207,84 @@ class EmployeesController extends AppController
 
     public function attendanceReport(){
 
-        $this->viewBuilder()->layout('login-default');
+        if(!$this->Auth->user()){
+            $this->viewBuilder()->layout('login-default');
+        }
         $this->loadModel('AttendanceLogs');
+        $this->loadModel('Modes');
+
         
         $report=[];
         
         if ($this->request->is('post')) {
             $data=$this->request->getData();
             $employee=$this->Employees->findByOfficeId($data['office_id'])->first();
+            $data['end_date']=new FrozenTime($data['end_date']);
+            $data['end_date']=$data['end_date']->modify('+1 day');
+            $data['start_date']=new FrozenTime($data['start_date']);
            
             if($employee){
-                $report=$this->AttendanceLogs
+                $attendanceLogs=$this->AttendanceLogs
                              ->findByEmployeeId($employee->id)
-                             ->contain('Employees')
-                             ->where(['log_timestamp >='=>$data['start_date'],'log_timestamp <='=>$data['end_date']])
-                             ->toArray();    
+                             ->contain(['Modes'])
+                             ->where(['log_timestamp >='=>$data['start_date'],'log_timestamp <'=>$data['end_date']])
+                             ->order(['log_timestamp' => 'ASC'])
+                             ->toArray(); 
+                $collection = new Collection($attendanceLogs); 
+                $newCollection = $collection->map(function($value, $key){
+
+                    $timestamp = strtotime($value->log_timestamp);
+                    $date=date('d-m-Y' ,$timestamp) ; 
+                    $time=date('H-i-s' ,$timestamp) ; 
+                    return  ['date' => $date, 'time' => $time];   
+                });
+
+                $new=$newCollection->groupBy('date')->map(function($value, $key){
+                   
+                    return  ['in'=>$value[0],'out'=>end($value)];  
+                });
+                $report=$new->toArray();
+
             }
              
         }
+
+        $this->set(compact('employee'));
         $this->set(compact('report'));
        
     }
     public function employeeReport($id = null){
         $this->loadModel('AttendanceLogs');
-        $this->loadModel('Modes');
+        $reports=[];
 
         $employee = $this->Employees->get($id, [ ]);
         $attendanceLogs=$this->AttendanceLogs
                              ->findByEmployeeId($id)
+                             ->contain(['Modes'])
                              ->order(['log_timestamp' => 'DESC'])
-                             ->toArray();  
-        
+                             ->toArray(); 
+
+        $collection = new Collection($attendanceLogs); 
+        $newCollection = $collection->map(function($value, $key){
+
+            $timestamp = strtotime($value->log_timestamp);
+            $date=date('d-m-Y' ,$timestamp) ; 
+            $time=date('H-i-s' ,$timestamp) ; 
+            return  ['date' => $date, 'time' => $time];   
+        });
+
+        $new=$newCollection->groupBy('date')->map(function($value, $key){
+           
+            return  ['out'=>$value[0],'in'=>end($value)];  
+        });
+        $reports=$new->toArray(); 
+       
         $this->set('employee', $employee);
-        $this->set('attendanceLogs', $attendanceLogs);
+        $this->set(compact('reports'));
        
     }
-   
+
+
+
 
 }

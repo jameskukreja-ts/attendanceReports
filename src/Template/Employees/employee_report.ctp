@@ -14,26 +14,26 @@
 
 	<div class="related">
         
-        <?php if (!empty($attendanceLogs)): ?>
+        <?php if (!empty($reports)): ?>
         <table cellpadding="0" cellspacing="0">
             <tr>
-                <th scope="col"><?= __('Id') ?></th>
+                <th scope="col"><?= __('S. No.') ?></th>
                 <th scope="col"><?= __('Date') ?></th>
-                <th scope="col"><?= __('Time') ?></th>
+                <th scope="col"><?= __('In Time') ?></th>
                 <!-- <th scope="col"><?= __('Employee Id') ?></th> -->
-                <th scope="col"><?= __('Mode Id') ?></th>
+                <th scope="col"><?= __('Out Time') ?></th>
                 <!-- <th scope="col"><?= __('Created') ?></th>
                 <th scope="col"><?= __('Modified') ?></th> -->
                 
             </tr>
-            <?php foreach ($attendanceLogs as $attendanceLog): ?>
+            <?php $id=1; foreach ($reports as $report): ?>
             <tr>
-                <td><?= h($attendanceLog->id) ?></td>
-                <td><?php $timestamp = strtotime($attendanceLog->log_timestamp);
-                          echo date('d-m-Y' ,$timestamp) ; ?></td>
-                <td><?= h(date('H-i-s' ,$timestamp))?></td>
+                <td><?= $this->Number->format($id++) ?></td>
+                <td><?php echo $report['in']['date'] ; ?></td>
+                <td><?php echo $report['in']['time'] ; ?></td>
                 <!-- <td><?= h($attendanceLogs->employee_id) ?></td> -->
-                <td><?= h($attendanceLog->mode_id) ?></td>
+                <td><?php echo $report['out']['time'] ; ?></td>
+                <td><?= $this->Html->link(__('Details'), ['action' => 'view', $report['in']['date'],$employee->id]) ?></td>
                 <!-- <td><?= h($attendanceLogs->created) ?></td>
                 <td><?= h($attendanceLogs->modified) ?></td> -->
             </tr>
