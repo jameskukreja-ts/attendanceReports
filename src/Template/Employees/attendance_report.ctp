@@ -42,25 +42,35 @@
     <?php if($report):?>
         <fieldset>
                 <legend><?= __('Attendance Report') ?></legend>
+                <table class="vertical-table">
+                    <tr>
+                        <th scope="row"><?= __('Name') ?></th>
+                        <td><?php echo $employee->first_name." ".$employee->last_name ?></td>
+                        <th scope="row"><?= __('Office Id') ?></th>
+                        <td><?= h($employee->office_id) ?></td>
+                    </tr>
+                    
+                </table>
                    
                         <table cellpadding="0" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th scope="col">Employee Id</th>
-                                    <th scope="col">Name</th>
+                                    <th scope="col">S. No.</th>
                                     <th scope="col">Date</th>
-                                    <th scope="col">Time</th>
+                                    <th scope="col">In Time</th>
+                                    <th scope="col">Out Time</th>
                                    
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach ($report as $row): ?>
+                                <?php $i=1;
+                                 foreach ($report as $row): ?>
                                 <tr>
-                                    <td><?= h($row->employee->office_id)?></td>
-                                    <td><?= h($row->employee->first_name)?></td>
-                                    <td><?php $timestamp = strtotime($row->log_timestamp);
-                                              echo date('d-m-Y' ,$timestamp) ; ?></td>
-                                    <td><?php echo date('H-i-s' ,$timestamp) ; ?></td>
+                                    <td><?php echo $i++ ; ?></td>
+                                    <td><?php  echo $row['in']['date'] ; ?></td>
+                                    <td><?php echo $row['in']['time'] ; ?></td>
+                                    <td><?php echo $row['out']['time'] ; ?></td>
+                                    <td><?= $this->Html->link(__('Details'), ['action' => 'view', $row['in']['date'],$employee->id]) ?></td>
                                 
                                 </tr>
                                 <?php endforeach; ?>

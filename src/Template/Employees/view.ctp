@@ -5,8 +5,8 @@
  */
 ?>
 
-<div class="employees view large-9 medium-8 columns content">
-    <h3><?= h($employee->id) ?></h3>
+<div class="employees view large-9 medium-8 columns content" style="margin:0px 0px 0px 140px;">
+    <!-- <h3><?= h($employee->id) ?></h3>
     <table class="vertical-table">
         <tr>
             <th scope="row"><?= __('First Name') ?></th>
@@ -36,36 +36,28 @@
             <th scope="row"><?= __('Modified') ?></th>
             <td><?= h($employee->modified) ?></td>
         </tr>
-    </table>
-    <div class="related">
-        <h4><?= __('Related Attendance Logs') ?></h4>
-        <?php if (!empty($employee->attendance_logs)): ?>
+    </table> -->
+    
+       
+        <?php if (!empty($details)): ?>
+         <h4><?= __('Attendance Logs') ?></h4>
         <table cellpadding="0" cellspacing="0">
             <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Log Timestamp') ?></th>
-                <th scope="col"><?= __('Employee Id') ?></th>
-                <th scope="col"><?= __('Mode Id') ?></th>
-                <th scope="col"><?= __('Created') ?></th>
-                <th scope="col"><?= __('Modified') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
+                <th scope="col">S. No.</th>
+                <th scope="col">Time</th>
+                <th scope="col">Mode</th>
+                
             </tr>
-            <?php foreach ($employee->attendance_logs as $attendanceLogs): ?>
+            <?php $i=1; foreach ($details as $detail): ?>
             <tr>
-                <td><?= h($attendanceLogs->id) ?></td>
-                <td><?= h($attendanceLogs->log_timestamp) ?></td>
-                <td><?= h($attendanceLogs->employee_id) ?></td>
-                <td><?= h($attendanceLogs->mode_id) ?></td>
-                <td><?= h($attendanceLogs->created) ?></td>
-                <td><?= h($attendanceLogs->modified) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['controller' => 'AttendanceLogs', 'action' => 'view', $attendanceLogs->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['controller' => 'AttendanceLogs', 'action' => 'edit', $attendanceLogs->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'AttendanceLogs', 'action' => 'delete', $attendanceLogs->id], ['confirm' => __('Are you sure you want to delete # {0}?', $attendanceLogs->id)]) ?>
-                </td>
+                <td><?php echo $i++ ; ?></td>
+                <td><?= h($detail['time']) ?></td>
+                <td><?= h($detail['mode']) ?></td>
+                
+               
             </tr>
             <?php endforeach; ?>
         </table>
         <?php endif; ?>
-    </div>
+    
 </div>
