@@ -6,8 +6,9 @@
 ?>
 
 <div class="employees index large-12 medium-8 columns content">
-    <h3><?= __('Employees') ?></h3>
     <?= $this->Html->link(__('Add Employee'), ['controller' => 'Employees', 'action' => 'add'],['class'=>'button right']) ?>
+    <h3><?= __('Employees') ?></h3>
+    
     <table cellpadding="0" cellspacing="0">
         <thead>
             <tr>
@@ -16,8 +17,6 @@
                 <th scope="col"><?= 'Last Name' ?></th>
                 <th scope="col"><?= 'Office ID' ?></th>
                 <th scope="col"><?= 'Machine Generated ID' ?></th>
-                <!-- <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('modified') ?></th> -->
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -29,10 +28,8 @@
                 <td><?= h($employee->last_name) ?></td>
                 <td><?= h($employee->office_id) ?></td>
                 <td><?= $this->Number->format($employee->machine_generated_id) ?></td>
-                <!-- <td><?= h($employee->created) ?></td>
-                <td><?= h($employee->modified) ?></td> -->
                 <td class="actions">
-                    <!-- //$this->Html->link(__('View'), ['action' => 'view', $employee->id]) ?> -->
+                    
                     <?= $this->Html->link(__('  '), ['action' => 'employeeReport', $employee->id],['class'=>'fa fa-eye fa-lg']) ?>
                     <?= $this->Html->link(__('  '), ['action' => 'edit', $employee->id],['class'=>'fa fa-edit fa-lg']) ?>
                     <?= $this->Form->postLink(__(''), ['action' => 'delete', $employee->id],['class'=>'fa fa-trash fa-lg'], ['confirm' => __('Are you sure you want to delete # {0}?', $employee->id)]) ?>

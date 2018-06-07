@@ -26,9 +26,7 @@ class EmployeesController extends AppController
      */
     public function index()
     {
-        $this->paginate = [
-            
-        ];
+        $this->paginate = [ ];
         $employees = $this->paginate($this->Employees);
 
         $this->set(compact('employees'));
@@ -55,19 +53,16 @@ class EmployeesController extends AppController
         
         $collection = new Collection($report); 
         $newCollection = $collection->map(function($value, $key){
-
             $timestamp = strtotime($value->log_timestamp);
             $date=date('d-m-Y' ,$timestamp) ; 
             $time=date('H-i-s' ,$timestamp) ; 
             return  ['date' => $date, 'time' => $time,'mode'=>$value->mode->name];   
         });
 
-
-
         $new=$newCollection->groupBy('date')->toArray();
         $details=$new[$date];
+        $this->set(compact('date'));
         $this->set(compact('details'));
-
     }
 
     /**
@@ -81,8 +76,8 @@ class EmployeesController extends AppController
         if ($this->request->is('post')) {
             $employee = $this->Employees->patchEntity($employee, $this->request->getData());
             if ($this->Employees->save($employee)) {
+                
                 $this->Flash->success(__('The employee has been saved.'));
-
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The employee could not be saved. Please, try again.'));
@@ -171,7 +166,7 @@ class EmployeesController extends AppController
             if(!$this->AttendanceCsvs->save($attendanceCsv)){
                 $this->Flash->error(__("not saved"));
             }else{
-            $this->Flash->success(__("1: Csv File Saved in Database"));
+                $this->Flash->success(__("1: Csv File Saved in Database"));
             }
             $headings=['employee_id', 'timestamp', 'a', 'b', 'mode_id','c'];
             $fileData =$this->Shared->getCsvData('AttendanceLogs',$attendanceCsv->full_file_path, $headings);
@@ -214,7 +209,7 @@ class EmployeesController extends AppController
                     $this->Flash->error(__("Logs not saved"));
                 }else{
 
-                $this->Flash->success(__("2: Logs have been updated."));
+                    $this->Flash->success(__("2: Logs have been updated."));
                 }
             }
         }
@@ -300,9 +295,5 @@ class EmployeesController extends AppController
         $this->set(compact('reports'));
        
     }
-
-
-
-
 
 }

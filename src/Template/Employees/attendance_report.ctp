@@ -6,19 +6,7 @@
 ?>
 
 <div class="employees form large-9 medium-8 columns content" style="margin:0px 0px 0px 140px;">
-   <!--  <?= $this->Form->create() ?>
-    <fieldset>
-        <legend><?= __('Attendance Report') ?></legend>
-        <?php
-            echo $this->Form->control('office_id',['required'=>true,'label'=>'Office Id','type'=>'text']);
-            //echo $this->Form->control('start_date',['label'=>'Start Date','type'=>'date']);
-           // echo $this->Form->control('end_date',['label'=>'End Date','type'=>'date']);
-            echo '<label><strong>Start Date</strong></label><input type="date" name="start_date" required>';
-            echo '<label><strong>End Date</strong></label><input type="date" name="end_date" required>';
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?> -->
+   
 <?= $this->Form->create() ?>
     <table cellpadding="0" cellspacing="0">
         <tr>
@@ -36,7 +24,7 @@
         </tr>
     </table>
     
-    <?= $this->Form->end() ?>
+<?= $this->Form->end() ?>
     
 
     <?php if($report):?>
