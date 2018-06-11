@@ -7,12 +7,12 @@
 
 <div class="employees form large-9 medium-8 columns content">
     <?= $this->Form->create($attendanceCsv, ['class' => 'form-horizontal', 'enctype'=>"multipart/form-data"]) ?>
-    <fieldset>
+    
     
     <?= $this->Form->input('file_name', ['label' => false,'required' => true,['class' => 'form-control'],'type' => "file",'id'=>'imgChange','onchange'=>"checkfile(this);"]); ?>
         
-    <?= $this->Form->button(__('Submit'),array('onlcick' => '')) ?>
-    </fieldset>
+    <?= $this->Form->button(__('Submit'),['class'=>'left'],array('onlcick' => '')) ?>
+   
 <?php echo $this->Form->end(); ?>
 
 </div>

@@ -45,6 +45,18 @@ use Cake\Routing\Route\DashedRoute;
  *
  */
 Router::defaultRouteClass(DashedRoute::class);
+// $routes->fallbacks(DashedRoute::class);
+// });
+
+Router::prefix('api', function ($routes) {
+    // Because you are in the admin scope,
+    // you do not need to include the /admin prefix
+    // or the admin route element.
+    //die('asfas');
+    $routes->connect('/:controller/:action/*', ['controller' => ':controller', 'action' => ':action']);
+    $routes->fallbacks(InflectedRoute::class);
+
+});
 
 Router::scope('/', function (RouteBuilder $routes) {
     /**

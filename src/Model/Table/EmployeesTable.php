@@ -7,7 +7,6 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Core\Configure;
 
-
 /**
  * Employees Model
  *
@@ -45,7 +44,9 @@ class EmployeesTable extends Table
 
         $this->addBehavior('Timestamp');
         $this->hasMany('AttendanceLogs', [
-            'foreignKey' => 'employee_id'
+            'foreignKey' => 'employee_id',
+            // 'dependent' => true,
+            // 'cascadeCallbacks' => true
         ]);
         
     }

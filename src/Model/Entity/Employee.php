@@ -41,5 +41,16 @@ class Employee extends Entity
         'machine_generated' => true,
         'attendance_logs' => true
     ];
+
+    protected function _getFullName()
+   {   //Was giving an error in new entity
+        if(!isset($this->_properties['first_name']) && !isset($this->_properties['last_name'])){
+            return false;
+        }
+
+        $name = $this->_properties['first_name'] .' '.$this->_properties['last_name'];
+        
+        return $name;
+   }
 }
 

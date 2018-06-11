@@ -6,7 +6,7 @@
 ?>
 
 <div class="employees view large-9 medium-8 columns content" style="margin:0px 0px 0px 140px;">
-       
+    <?= $this->Html->link(__('Back'), ['controller' => 'Employees', 'action' => 'attendanceReport'],['class'=>'button right']) ?>   <br>
         <?php if (!empty($details)): ?>
          <h4><?= __('Attendance Logs') ?><?= h(": ".$date) ?></h4>
         <table cellpadding="0" cellspacing="0">
