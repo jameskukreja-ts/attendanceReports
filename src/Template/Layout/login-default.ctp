@@ -24,6 +24,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         <?= $cakeDescription ?>:
         <?= $this->fetch('title') ?>
     </title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    
     <?= $this->Html->meta('icon') ?>
 
     <?= $this->Html->css('base.css') ?>
@@ -51,5 +53,6 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 
     <footer>
     </footer>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 </body>
 </html>
