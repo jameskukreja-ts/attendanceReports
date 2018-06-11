@@ -151,6 +151,8 @@ class EmployeesController extends AppController
     
     public function syncAttendance()
     {
+        
+
         $this->loadModel('Modes');
         $this->loadComponent('Shared');
         $this->loadModel('AttendanceCsvs');
@@ -300,6 +302,31 @@ class EmployeesController extends AppController
         //pr($months);die;
          $this->set(compact('months'));
        
+    }
+    public function settings(){
+        $this->loadModel('Settings');
+        $data = array();
+        $data=$this->request->getData();
+        if ($this->request->is('post')) {
+            $settings=[
+                [
+                 'id'=>1,
+                 'value'=>$data['half_day_hours']  
+                ],
+                [
+                 'id'=>2,
+                 'value'=>$data['full_day_hours']  
+                ]
+            ];
+            // pr($data);
+            // pr($settings); die();
+            $settings=$this->Settings->patchEntities($data,$settings);
+            // pr($settings);die;
+            if(!$this->Settings->saveMany($settings)){
+                $this->Flash->error(__('Settings could not be saved'));
+            }
+            $this->Flash->success(__('Settings saved successfully'));
+        }
     }
 
 }
