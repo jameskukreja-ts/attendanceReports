@@ -5,7 +5,7 @@
  */
 ?>
 
-<div class="employees form large-9 medium-8 columns content" style="margin:0px 0px 0px 140px;">
+<div class="employees form large-10 medium-8 columns content" style="margin:0px 0px 0px 100px;">
    
 <?= $this->Form->create('') ?>
     <table cellpadding="0" cellspacing="0">
@@ -37,7 +37,7 @@
     <?php if($report):?>
     
         <fieldset>
-            <legend><?= __('Attendance Report : '.$dates['start_date'].' to '.$dates['end_date']) ?></legend>
+            <legend><?= __('Attendance Report : '.$startDate->i18nFormat('dd-MM-yyyy').' to '.$endDate->i18nFormat('dd-MM-yyyy')) ?></legend>
                    
                 <table class="vertical-table">
                     <tr>
@@ -63,11 +63,81 @@
                                     <th scope="col">In Time</th>
                                     <th scope="col">Out Time</th>
                                     <th scope="col">Duration(hrs.)</th>
+                                    <th scope="col">Status</th>
                                    
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $i=1; $date=null;
+                                <?php   $s_no=1;
+                                        $date = $startDate;
+                                        while($date != $endDate):
+                                            
+                                            $in="-";
+                                            $out="-";
+                                            $duration="-";
+                                            $holidays='';
+                                            if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
+                                                $in=$report[$date->i18nFormat('dd-MM-yyyy')]['in']['time'];
+                                                $out=$report[$date->i18nFormat('dd-MM-yyyy')]['out']['time'];
+                                                $duration=$report[$date->i18nFormat('dd-MM-yyyy')]['duration'];
+                                            }else{
+                                                    
+                                                    
+                                            }
+                                                 
+                                            
+                                ?>
+
+                                <tr>
+                                    <td><?=$s_no++?></td>
+                                    <td><?= $date->i18nFormat('dd-MM-yyyy') ?></td>
+                                    <td><?= $in ?></td>
+                                    <td><?= $out ?></td>
+                                    <td><?=$duration?></td>
+                                    <td></td>
+                                    <td>
+                                    <?php if(isset($report[$date->i18nFormat('dd-MM-yyyy')])):?>
+                                    <a title = "Attendance logs" onclick = "displayModal('<?= $employee->id ?>','<?= $date->i18nFormat('dd-MM-yyyy') ?>')"><i title="Details" class="fa fa-info-circle fa-lg" id="myBtn"></i></a>
+                                    <?php endif?>
+                                    </td>
+                                    
+
+                                </tr>
+
+                            <?php 
+                                $date = $date->modify('+1 day');
+                                endwhile; 
+                            ?>
+                               <!--  <?php $s_no=1;
+                                    $year=date('Y',strtotime($dates['start_date']));
+                                    $start_month=date('m',strtotime($dates['start_date']));
+                                    $start_month=ltrim($start_month,'0');
+                                    $end_month=date('m',strtotime($dates['end_date']));
+                                    $end_month=ltrim($end_month,'0');
+                                for ($i=$start_month; $i<=$end_month; $i++): ?>
+                                    <?php
+                                    $days=$months[$i];
+                                    
+                                    for ($j=1; $j<=$days; $j++): ?>
+                                       <tr>
+                                        
+                                        <?php 
+                                                $z=1;
+                                                $date=date_create($year."-".$i."-".$j);
+                                                $date=date_format($date,'d-m-Y');
+
+                                                if((strtotime($dates['start_date'])<=strtotime($date))&&(strtotime($dates['end_date'])>=strtotime($date))){
+                                                     echo '<td>'.$s_no++.'</td>';
+                                                    echo '<td>'.$date.'</td>';
+
+                                                }
+                                                     
+                                                 ?>
+                                       </tr>
+                                    <?php endfor; ?>
+                                <?php endfor; ?> -->
+
+                                <!--<?php $i=1; $date=null;
                                  foreach ($report as $row): ?>
                                 <tr>
                                     <td><?php echo $i++ ; ?></td>
@@ -76,12 +146,12 @@
                                     <td><?php echo $row['out']['time'] ; ?></td>
                                     <td><?php echo $row['duration'] ?></td>
                                     <td><!--<?= $this->Html->link(__('Details'), ['action' => 'view', $row['in']['date'],$employee->id]) ?>-->
-                                        <?php $date= $row['in']['date']; ?>
+                        <!--            <?php $date= $row['in']['date']; ?>
                                     <a title = "Attendance logs" onclick = "displayModal('<?= $employee->id ?>','<?= $row['in']['date'] ?>')"><i title="Details" class="fa fa-info-circle fa-lg" id="myBtn"></i></a>
                                     </td>
                                 
                                 </tr>
-                                <?php endforeach; ?>
+                                <?php endforeach; ?>-->
                             </tbody>
                         </table>
 

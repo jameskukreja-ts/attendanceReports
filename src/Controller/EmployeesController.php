@@ -5,6 +5,7 @@ use App\Controller\AppController;
 use Cake\Core\Configure;
 use Cake\I18n\FrozenTime;
 use Cake\I18n\Time;
+use Cake\I18n\Date;
 use Cake\Log\Log;
 use Cake\Collection\Collection;
 
@@ -233,22 +234,21 @@ class EmployeesController extends AppController
         }
         
         $report=[];
+        $holidays=Configure::read('Holidays');
         
         if ($this->request->is('post')) {
 
             $data=$this->request->getData();
             
-            $dates=$this->request->getData();
-            $timestamp1 = strtotime($dates['start_date']);
-            $dates['start_date']=date('d-m-Y' ,$timestamp1) ; 
-            $timestamp2 = strtotime($dates['end_date']);
-            $dates['end_date']=date('d-m-Y' ,$timestamp2) ;
+            
             
             $employee=$this->Employees->findByOfficeId($data['office_id'])->first();
             $data['end_date']=new FrozenTime($data['end_date']);
+            $endDate = $data['end_date'];    
             $data['end_date']=$data['end_date']->modify('+1 day');
             $data['start_date']=new FrozenTime($data['start_date']);
-           
+            $startDate =  $data['start_date'];
+
             if($employee){
                 $attendanceLogs=$this->AttendanceLogs
                              ->findByEmployeeId($employee->id)
@@ -269,11 +269,14 @@ class EmployeesController extends AppController
                     return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2)];  
                 });
                 $report=$new->toArray();
-                //pr($dates);die;
+                
 
             }
-            $this->set(compact('dates'));
+            pr($holidays);die;
+            $this->set(compact('holidays'));
+            $this->set(compact('startDate', 'endDate'));
             $this->set(compact('employee'));
+
         }
 
         $this->set(compact('report', 'employees'));
@@ -295,9 +298,17 @@ class EmployeesController extends AppController
         // ['id'=>'10', 'days'=>31, 'name'=>'October'],
         // ['id'=>'11', 'days'=>30, 'name'=>'November'],
         // ['id'=>'12', 'days'=>31, 'name'=>'December']
-        
-        
-        //pr($months);die;
+       $months=[
+        '1'=>31, '2'=>28,'3'=>31,'4'=>30,'5'=>31,'6'=>30,'7'=>31,'8'=>31,'9'=>30,'10'=>31,'11'=>30,'12'=>31];
+        $t=Time::now();
+        // date('Y',strtotime($dates['start_date'])
+        $weekDay=date('t',strtotime($t));
+        if($weekDay==0||$weekDay==6){
+            $q='y';
+        }else{
+            $q='N';
+        }
+        pr($weekDay);die;
          $this->set(compact('months'));
        
     }
