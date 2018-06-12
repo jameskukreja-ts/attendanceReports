@@ -43,14 +43,26 @@
                     <tr>
                         <th scope="row"><?= __('Name') ?></th>
                         <td><?php echo $employee->first_name." ".$employee->last_name ?></td>
-                    </tr><tr>
+                    </tr>
+                    <tr>
                         <th scope="row"><?= __('Office Id') ?></th>
                         <td><?= h($employee->office_id) ?></td>
                     </tr>
-                    </tr><tr>
-                        <th scope="row"><?= __('Absents') ?></th>
-                        <td><?php $id=1;
-                        echo 23-sizeof($report) ?></td>
+                    <tr>
+                        <th scope="row"><?= __('Working Days') ?></th>
+                        <td id="workingDays"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?= __('Full Days') ?></th>
+                        <td id="fullDays"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?= __('Half Days') ?></th>
+                        <td id="halfDays"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><?= __('Absent Days') ?></th>
+                        <td id="absentDays"></td>
                     </tr>
                     
                 </table>
@@ -70,23 +82,41 @@
                             <tbody>
                                 <?php   $s_no=1;
                                         $date = $startDate;
-                                        while($date != $endDate):
+                                        $halfdays=0;
+                                        $workingdays=0;
+                                        $absents=0;
+                                        $fulldays=0;
+                                        while($date <= $endDate):
                                             
                                             $in="-";
                                             $out="-";
                                             $duration="-";
-                                            $holidays='';
+                                            $status="";
+                                            $weekEnd=date('l',strtotime($date));
                                             if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
                                                 $in=$report[$date->i18nFormat('dd-MM-yyyy')]['in']['time'];
                                                 $out=$report[$date->i18nFormat('dd-MM-yyyy')]['out']['time'];
                                                 $duration=$report[$date->i18nFormat('dd-MM-yyyy')]['duration'];
-                                            }else{
-                                                    
-                                                    
+                                                if($duration<8&&$duration>=4){
+                                                    $status='Halfday';
+                                                    $halfdays++;
+                                                }elseif($duration<4){
+                                                    $status='Absent';
+                                                    $absents++;
+                                                }else{
+                                                     $status='Fullday';
+                                                     $fulldays++;
+                                                }
                                             }
-                                                 
-                                            
-                                ?>
+                                            if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
+                                                $status='Holiday';    
+                                            }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
+                                                $status='Weekend';
+                                            }elseif(!isset($report[$date->i18nFormat('dd-MM-yyyy')])){
+                                                $status='Absent';
+                                                $absents++;
+                                            }
+                                    ?>
 
                                 <tr>
                                     <td><?=$s_no++?></td>
@@ -94,7 +124,7 @@
                                     <td><?= $in ?></td>
                                     <td><?= $out ?></td>
                                     <td><?=$duration?></td>
-                                    <td></td>
+                                    <td><?=$status?></td>
                                     <td>
                                     <?php if(isset($report[$date->i18nFormat('dd-MM-yyyy')])):?>
                                     <a title = "Attendance logs" onclick = "displayModal('<?= $employee->id ?>','<?= $date->i18nFormat('dd-MM-yyyy') ?>')"><i title="Details" class="fa fa-info-circle fa-lg" id="myBtn"></i></a>
@@ -107,6 +137,8 @@
                             <?php 
                                 $date = $date->modify('+1 day');
                                 endwhile; 
+                                $workingdays=$halfdays+$fulldays+$absents;
+                               //pr($workingdays);die;
                             ?>
                                <!--  <?php $s_no=1;
                                     $year=date('Y',strtotime($dates['start_date']));
@@ -197,6 +229,15 @@
 
 </div>
  <script>
+ var workingdays=<?php echo $workingdays?>;
+ $('#workingDays').html(workingdays);
+ var halfdays=<?php echo $halfdays?>;
+ $('#halfDays').html(halfdays);
+ var fulldays=<?php echo $fulldays?>;
+ $('#fullDays').html(fulldays);
+ var absentdays=<?php echo $absents?>;
+ $('#absentDays').html(absentdays);            
+                                       
 // Get the modal
 var modal = document.getElementById('myModal');
 

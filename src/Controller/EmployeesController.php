@@ -235,13 +235,13 @@ class EmployeesController extends AppController
         
         $report=[];
         $holidays=Configure::read('Holidays');
+        $holidays = new Collection($holidays); 
+        $holidays = $holidays->groupBy('date')->toArray();
         
         if ($this->request->is('post')) {
 
             $data=$this->request->getData();
-            
-            
-            
+             
             $employee=$this->Employees->findByOfficeId($data['office_id'])->first();
             $data['end_date']=new FrozenTime($data['end_date']);
             $endDate = $data['end_date'];    
@@ -250,29 +250,30 @@ class EmployeesController extends AppController
             $startDate =  $data['start_date'];
 
             if($employee){
-                $attendanceLogs=$this->AttendanceLogs
-                             ->findByEmployeeId($employee->id)
-                             ->contain(['Modes'])
-                             ->where(['log_timestamp >='=>$data['start_date'],'log_timestamp <'=>$data['end_date']])
-                             ->order(['log_timestamp' => 'ASC'])
-                             ->toArray(); 
-                $collection = new Collection($attendanceLogs); 
-                $newCollection = $collection->map(function($value, $key){
+                $report=$this->employeeDetail($employee->id,$data['start_date'],$data['end_date']);
+                // $attendanceLogs=$this->AttendanceLogs
+                //              ->findByEmployeeId($employee->id)
+                //              ->contain(['Modes'])
+                //              ->where(['log_timestamp >='=>$data['start_date'],'log_timestamp <'=>$data['end_date']])
+                //              ->order(['log_timestamp' => 'ASC'])
+                //              ->toArray(); 
+                // $collection = new Collection($attendanceLogs); 
+                // $newCollection = $collection->map(function($value, $key){
 
-                    $timestamp = strtotime($value->log_timestamp);
-                    $date=date('d-m-Y' ,$timestamp) ; 
-                    $time=date('H:i:s' ,$timestamp) ; 
-                    return  ['date' => $date, 'time' => $time,'mode'=>$value->mode->name, 'timestamp' => $timestamp];   
-                });
-                $new=$newCollection->groupBy('date')->map(function($value, $key){
-                    $duration = (end($value)['timestamp'] -$value[0]['timestamp'])/3600;
-                    return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2)];  
-                });
-                $report=$new->toArray();
+                //     $timestamp = strtotime($value->log_timestamp);
+                //     $date=date('d-m-Y' ,$timestamp) ; 
+                //     $time=date('H:i:s' ,$timestamp) ; 
+                //     return  ['date' => $date, 'time' => $time,'mode'=>$value->mode->name, 'timestamp' => $timestamp];   
+                // });
+                // $new=$newCollection->groupBy('date')->map(function($value, $key){
+                //     $duration = (end($value)['timestamp'] -$value[0]['timestamp'])/3600;
+                //     return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2)];  
+                // });
+                //$report=$new->toArray();
                 
 
             }
-            pr($holidays);die;
+            //pr($holidays);die;
             $this->set(compact('holidays'));
             $this->set(compact('startDate', 'endDate'));
             $this->set(compact('employee'));
@@ -281,6 +282,27 @@ class EmployeesController extends AppController
 
         $this->set(compact('report', 'employees'));
        
+    }
+    private function employeeDetail($id,$startDate,$endDate){
+        $this->loadModel('AttendanceLogs');
+         $attendanceLogs=$this->AttendanceLogs
+                             ->findByEmployeeId($id)
+                             ->where(['log_timestamp >='=>$startDate,'log_timestamp <'=>$endDate])
+                             ->order(['log_timestamp' => 'ASC'])
+                             ->toArray(); 
+                $collection = new Collection($attendanceLogs); 
+                $newCollection = $collection->map(function($value, $key){
+
+                    $timestamp = strtotime($value->log_timestamp);
+                    $date=date('d-m-Y' ,$timestamp) ; 
+                    $time=date('H:i:s' ,$timestamp) ; 
+                    return  ['date' => $date, 'time' => $time, 'timestamp' => $timestamp];   
+                });
+                $new=$newCollection->groupBy('date')->map(function($value, $key){
+                    $duration = (end($value)['timestamp'] -$value[0]['timestamp'])/3600;
+                    return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2)];  
+                });
+            return $new->toArray();
     }
 
     public function employeeReport(){
