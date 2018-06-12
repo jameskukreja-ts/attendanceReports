@@ -307,35 +307,6 @@ class EmployeesController extends AppController
             return $new->toArray();
     }
 
-    public function employeeReport(){
-        $this->loadModel('AttendanceLogs');
-        // $months=[
-        // ['id'=>'1', 'days'=>31, 'name'=>'January'],
-        // ['id'=>'2', 'days'=>28, 'name'=>'February'],
-        // ['id'=>'3', 'days'=>31, 'name'=>'March'],
-        // ['id'=>'4', 'days'=>30, 'name'=>'April'],
-        // ['id'=>'5', 'days'=>31, 'name'=>'May'],
-        // ['id'=>'6', 'days'=>30, 'name'=>'June'],
-        // ['id'=>'7', 'days'=>31, 'name'=>'July'],
-        // ['id'=>'8', 'days'=>31, 'name'=>'August'],
-        // ['id'=>'9', 'days'=>30, 'name'=>'September'],
-        // ['id'=>'10', 'days'=>31, 'name'=>'October'],
-        // ['id'=>'11', 'days'=>30, 'name'=>'November'],
-        // ['id'=>'12', 'days'=>31, 'name'=>'December']
-       $months=[
-        '1'=>31, '2'=>28,'3'=>31,'4'=>30,'5'=>31,'6'=>30,'7'=>31,'8'=>31,'9'=>30,'10'=>31,'11'=>30,'12'=>31];
-        $t=Time::now();
-        // date('Y',strtotime($dates['start_date'])
-        $weekDay=date('t',strtotime($t));
-        if($weekDay==0||$weekDay==6){
-            $q='y';
-        }else{
-            $q='N';
-        }
-        pr($weekDay);die;
-         $this->set(compact('months'));
-       
-    }
     public function settings(){
         $this->loadModel('Settings');
         $data = array();
@@ -360,6 +331,92 @@ class EmployeesController extends AppController
             }
             $this->Flash->success(__('Settings saved successfully'));
         }
+    }
+    public function aggregateReport(){
+        $this->loadModel('AttendanceLogs');
+        
+        $report=[];
+        $holidays=Configure::read('Holidays');
+        $holidays = new Collection($holidays); 
+        $holidays = $holidays->groupBy('date')->toArray();
+        
+        if ($this->request->is('post')) {
+
+            $data=$this->request->getData();
+             
+            $employees=$this->Employees->find()->toArray();
+            
+            $data['end_date']=new FrozenTime($data['end_date']);
+            $endDate = $data['end_date'];    
+            $data['end_date']=$data['end_date']->modify('+1 day');
+            $data['start_date']=new FrozenTime($data['start_date']);
+            $startDate =  $data['start_date'];
+
+            if($employees){
+                foreach ($employees as $employee) {
+                    $report[]=$this->employeeDetail($employee->id,$data['start_date'],$data['end_date']);
+
+
+                }
+            }
+            pr($report);die;
+            $date = $startDate;
+            $i=1;
+            foreach($report as $employee){
+                $halfdays=0;
+                $workingdays=0;
+                $absents=0;
+                $fulldays=0;
+                $data= [];
+                while($date <= $endDate){
+                    
+                    $in="-";
+                    $out="-";
+                    $duration="-";
+                    $status='';
+                    $weekEnd=date('l',strtotime($date));
+                    if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
+                        $in=$report[$date->i18nFormat('dd-MM-yyyy')]['in']['time'];
+                        $out=$report[$date->i18nFormat('dd-MM-yyyy')]['out']['time'];
+                        $duration=$report[$date->i18nFormat('dd-MM-yyyy')]['duration'];
+                        if($duration<8&&$duration>=4){
+                            $halfdays++;
+                        }elseif($duration<4){
+                            $absents++;
+                        }else{
+                             $fulldays++;
+                        }
+                    }
+                    if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
+                        $status='Holiday';    
+                    }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
+                        $status='Weekend';
+                    }elseif(!isset($report[$date->i18nFormat('dd-MM-yyyy')])){
+                        $status='Absent';
+                        $absents++;
+                    }
+                                        
+                    $date = $date->modify('+1 day');
+                }
+                    $workingdays=$halfdays+$fulldays+$absents;
+                    $data[$i]=[
+                        'absent'=>$absents,
+                        'fullDays'=>$fulldays,
+                        'halfDays'=>$halfdays
+
+                    ];
+                    $i++;
+            }
+
+            pr($report);die;
+            $this->set(compact('holidays'));
+            $this->set(compact('startDate', 'endDate'));
+            $this->set(compact('employees'));
+
+        }
+
+        $this->set(compact('report'));
+
     }
 
 }
