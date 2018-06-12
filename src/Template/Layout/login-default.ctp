@@ -30,7 +30,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 
     <?= $this->Html->css('base.css') ?>
     <?= $this->Html->css('style.css') ?>
-
+    <?= $this->Html->script('jquery-3.3.1.min'); ?>
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
@@ -54,5 +54,6 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <footer>
     </footer>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    
 </body>
 </html>

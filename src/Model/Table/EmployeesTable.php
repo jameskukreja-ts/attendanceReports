@@ -103,4 +103,41 @@ class EmployeesTable extends Table
 
         return $rules;
     }
+    public function employeeDetail($startDate,$endDate,$report){
+        
+        $date = $startDate;
+        $halfdays=0;
+        $workingdays=0;
+        $absents=0;
+        $fulldays=0;
+        while($date <= $endDate){
+            $status="";
+            $weekEnd=date('l',strtotime($date));
+            if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
+                if($report[$date->i18nFormat('dd-MM-yyyy')]['duration']<8&&$report[$date->i18nFormat('dd-MM-yyyy')]['duration']>=4){
+                    $status='Halfday';
+                    $halfdays++;
+                }elseif($report[$date->i18nFormat('dd-MM-yyyy')]['duration']<4){
+                    $status='Absent';
+                    $absents++;
+                }else{
+                     $status='Fullday';
+                     $fulldays++;
+                }
+            }
+            if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
+                $status='Holiday';    
+            }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
+                $status='Weekend';
+            }elseif(!isset($report[$date->i18nFormat('dd-MM-yyyy')])){
+                $status='Absent';
+                $absents++;
+            }
+
+        $date = $date->modify('+1 day');
+        }
+        $workingdays=$halfdays+$fulldays+$absents;
+        return ['workingdays'=>$workingdays,'fulldays'=>$fulldays,'halfdays'=>$halfdays,'absents'=>$absents];
+                               
+    }
 }
