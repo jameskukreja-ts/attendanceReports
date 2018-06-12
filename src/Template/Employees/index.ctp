@@ -21,9 +21,9 @@
             </tr>
         </thead>
         <tbody>
-            <?php $id=1; foreach ($employees as $employee): ?>
+            <?php $id=1; foreach ($employees as $key=>$employee): ?>
             <tr>
-                <td><?= $this->Number->format($id++) ?></td>
+                <td><?= $this->Number->format($key+1) ?></td>
                 <td><?= h($employee->first_name) ?></td>
                 <td><?= h($employee->last_name) ?></td>
                 <td><?= h($employee->office_id) ?></td>
