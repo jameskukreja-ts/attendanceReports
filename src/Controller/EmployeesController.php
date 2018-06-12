@@ -224,8 +224,6 @@ class EmployeesController extends AppController
 
     public function attendanceReport(){
 
-        $this->loadModel('AttendanceLogs');
-        $this->loadModel('Modes');
         
         if(!$this->Auth->user()){
             $this->viewBuilder()->layout('login-default');
@@ -306,32 +304,7 @@ class EmployeesController extends AppController
     }
 
     public function employeeReport(){
-        $this->loadModel('AttendanceLogs');
-        // $months=[
-        // ['id'=>'1', 'days'=>31, 'name'=>'January'],
-        // ['id'=>'2', 'days'=>28, 'name'=>'February'],
-        // ['id'=>'3', 'days'=>31, 'name'=>'March'],
-        // ['id'=>'4', 'days'=>30, 'name'=>'April'],
-        // ['id'=>'5', 'days'=>31, 'name'=>'May'],
-        // ['id'=>'6', 'days'=>30, 'name'=>'June'],
-        // ['id'=>'7', 'days'=>31, 'name'=>'July'],
-        // ['id'=>'8', 'days'=>31, 'name'=>'August'],
-        // ['id'=>'9', 'days'=>30, 'name'=>'September'],
-        // ['id'=>'10', 'days'=>31, 'name'=>'October'],
-        // ['id'=>'11', 'days'=>30, 'name'=>'November'],
-        // ['id'=>'12', 'days'=>31, 'name'=>'December']
-       $months=[
-        '1'=>31, '2'=>28,'3'=>31,'4'=>30,'5'=>31,'6'=>30,'7'=>31,'8'=>31,'9'=>30,'10'=>31,'11'=>30,'12'=>31];
-        $t=Time::now();
-        // date('Y',strtotime($dates['start_date'])
-        $weekDay=date('t',strtotime($t));
-        if($weekDay==0||$weekDay==6){
-            $q='y';
-        }else{
-            $q='N';
-        }
-        pr($weekDay);die;
-         $this->set(compact('months'));
+       
        
     }
 
