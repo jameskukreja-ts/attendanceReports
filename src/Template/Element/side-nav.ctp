@@ -5,5 +5,6 @@
         <li><?= $this->Html->link(__('User Management'), ['controller' => 'Users', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('Employee Management'), ['controller' => 'Employees', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('Attendance Report'), ['controller' => 'Employees', 'action' => 'attendanceReport']) ?></li>
+        <li><?= $this->Html->link(__('Settings'), ['controller' => 'Employees', 'action' => 'settings']) ?></li>
     </ul>
 </nav>
