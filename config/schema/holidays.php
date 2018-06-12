@@ -97,7 +97,7 @@ return [
 			'type'=>'Restricted',
 			'day'=>'Friday'
 		],
-	];
+	]
 
 ];
 

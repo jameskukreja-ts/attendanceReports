@@ -1,6 +1,7 @@
 <?php
 return [
 	'Holidays' => [
+
 		[
 			'name'=> 'New Year Day',
 			'date'=>'01-01-2018',

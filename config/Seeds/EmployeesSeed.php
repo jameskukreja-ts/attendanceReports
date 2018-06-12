@@ -77,7 +77,7 @@ class EmployeesSeed extends AbstractSeed
             ],
             [
                 'first_name'=>'Kshitiz',
-                'last_name'=>'Sikhri',
+                'last_name'=>'Sekhri',
                 'office_id' => 'A8',
                 'machine_generated_id' => 8,
                 'created'=>date("Y-m-d H:i:s"),
@@ -108,7 +108,7 @@ class EmployeesSeed extends AbstractSeed
                 'modified'=>date("Y-m-d H:i:s")
             ],
              [
-                'first_name'=>'VishaKha',
+                'first_name'=>'Vishakha',
                 'last_name'=>'Chaudhary',
                 'office_id' => 'A12',
                 'machine_generated_id' => 12,
