@@ -5,6 +5,10 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\I18n\FrozenTime;
+use Cake\I18n\Time;
+use Cake\I18n\Date;
+use Cake\Collection\Collection;
 
 /**
  * AttendanceLogs Model
@@ -85,5 +89,26 @@ class AttendanceLogsTable extends Table
         $rules->add($rules->existsIn(['mode_id'], 'Modes'));
 
         return $rules;
+    }
+    public function employeeAttendanceLogs($id,$startDate,$endDate){
+        // $this->loadModel('AttendanceLogs');
+        $attendanceLogs=$this
+                     ->findByEmployeeId($id)
+                     ->where(['log_timestamp >='=>$startDate,'log_timestamp <'=>$endDate])
+                     ->order(['log_timestamp' => 'ASC'])
+                     ->toArray(); 
+        $collection = new Collection($attendanceLogs); 
+        $newCollection = $collection->map(function($value, $key){
+
+            $timestamp = strtotime($value->log_timestamp);
+            $date=date('d-m-Y' ,$timestamp) ; 
+            $time=date('H:i:s' ,$timestamp) ; 
+            return  ['date' => $date, 'time' => $time, 'timestamp' => $timestamp];   
+        });
+        $new=$newCollection->groupBy('date')->map(function($value, $key){
+            $duration = (end($value)['timestamp'] -$value[0]['timestamp'])/3600;
+            return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2)];  
+        });
+        return $new->toArray();
     }
 }
