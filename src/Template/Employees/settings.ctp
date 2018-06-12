@@ -8,7 +8,7 @@
 <div class="employees form large-9 medium-8 columns content">
     <?= $this->Form->create(null) ?>
     <fieldset>
-        <legend><?= __('Add Employee') ?></legend>
+        <legend><?= __('Settings') ?></legend>
         <?php
             echo $this->Form->control('half_day_hours');
             echo $this->Form->control('full_day_hours');
