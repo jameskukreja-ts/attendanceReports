@@ -93,6 +93,7 @@ class AttendanceLogsTable extends Table
         return $rules;
     }
     public function employeeAttendanceLogs($id,$startDate,$endDate){
+
          
         $this->Settings = TableRegistry::get('Settings');
         $settings=$this->Settings->find()->toArray();
@@ -100,6 +101,7 @@ class AttendanceLogsTable extends Table
         $holidays = new Collection($holidays); 
         $holidays = $holidays->groupBy('date')->toArray();
         $endDate1=$endDate->modify('+1 day');
+
         $attendanceLogs=$this
                      ->findByEmployeeId($id)
                      ->where(['log_timestamp >='=>$startDate,'log_timestamp <'=>$endDate1])
@@ -158,5 +160,6 @@ class AttendanceLogsTable extends Table
             $date = $date->modify('+1 day');
         }
         return $report;
+
     }
 }
