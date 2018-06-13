@@ -273,8 +273,6 @@ class EmployeesController extends AppController
        
     }
     
-
-    
     public function settings(){
         $this->loadModel('Settings');
         $data = array();
@@ -299,6 +297,37 @@ class EmployeesController extends AppController
             }
             $this->Flash->success(__('Settings saved successfully'));
         }
+    }
+    public function aggregateReport(){
+        $this->loadModel('AttendanceLogs');
+        
+        $report=[];
+        $holidays=Configure::read('Holidays');
+        $holidays = new Collection($holidays); 
+        $holidays = $holidays->groupBy('date')->toArray();
+        $employeeDetails=[];
+        if ($this->request->is('post')) {
+
+            $data=$this->request->getData();
+             
+            $employees=$this->Employees->find()->toArray();
+            
+            $data['end_date']=new FrozenTime($data['end_date']);
+            $endDate = $data['end_date'];    
+            $data['end_date']=$data['end_date']->modify('+1 day');
+            $data['start_date']=new FrozenTime($data['start_date']);
+            $startDate =  $data['start_date'];
+
+            if($employees){
+                foreach ($employees as $employee) {
+                    $report=$this->AttendanceLogs->employeeAttendanceLogs($employee->id,$data['start_date'],$data['end_date']);
+                    $employeeDetails[]=['id'=>$employee->id,'name'=>$employee->full_name,'report'=>$this->Employees->employeeDetail($startDate,$endDate,$report)];
+                }
+            }
+            
+        }
+        $this->set(compact('employeeDetails'));
+        $this->set(compact('startDate', 'endDate'));
     }
 
 }
