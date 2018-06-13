@@ -273,8 +273,6 @@ class EmployeesController extends AppController
        
     }
     
-
-
     public function settings(){
         $this->loadModel('Settings');
         $data = array();
@@ -307,7 +305,7 @@ class EmployeesController extends AppController
         $holidays=Configure::read('Holidays');
         $holidays = new Collection($holidays); 
         $holidays = $holidays->groupBy('date')->toArray();
-        
+        $employeeDetails=[];
         if ($this->request->is('post')) {
 
             $data=$this->request->getData();
@@ -322,69 +320,14 @@ class EmployeesController extends AppController
 
             if($employees){
                 foreach ($employees as $employee) {
-                    $report[]=$this->employeeDetail($employee->id,$data['start_date'],$data['end_date']);
-
-
+                    $report=$this->AttendanceLogs->employeeAttendanceLogs($employee->id,$data['start_date'],$data['end_date']);
+                    $employeeDetails[]=['id'=>$employee->id,'name'=>$employee->full_name,'report'=>$this->Employees->employeeDetail($startDate,$endDate,$report)];
                 }
             }
-            pr($report);die;
-            $date = $startDate;
-            $i=1;
-            foreach($report as $employee){
-                $halfdays=0;
-                $workingdays=0;
-                $absents=0;
-                $fulldays=0;
-                $data= [];
-                while($date <= $endDate){
-                    
-                    $in="-";
-                    $out="-";
-                    $duration="-";
-                    $status='';
-                    $weekEnd=date('l',strtotime($date));
-                    if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                        $in=$report[$date->i18nFormat('dd-MM-yyyy')]['in']['time'];
-                        $out=$report[$date->i18nFormat('dd-MM-yyyy')]['out']['time'];
-                        $duration=$report[$date->i18nFormat('dd-MM-yyyy')]['duration'];
-                        if($duration<8&&$duration>=4){
-                            $halfdays++;
-                        }elseif($duration<4){
-                            $absents++;
-                        }else{
-                             $fulldays++;
-                        }
-                    }
-                    if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
-                        $status='Holiday';    
-                    }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
-                        $status='Weekend';
-                    }elseif(!isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                        $status='Absent';
-                        $absents++;
-                    }
-                                        
-                    $date = $date->modify('+1 day');
-                }
-                    $workingdays=$halfdays+$fulldays+$absents;
-                    $data[$i]=[
-                        'absent'=>$absents,
-                        'fullDays'=>$fulldays,
-                        'halfDays'=>$halfdays
-
-                    ];
-                    $i++;
-            }
-
-            pr($report);die;
-            $this->set(compact('holidays'));
-            $this->set(compact('startDate', 'endDate'));
-            $this->set(compact('employees'));
-
+            
         }
-
-        $this->set(compact('report'));
-
+        $this->set(compact('employeeDetails'));
+        $this->set(compact('startDate', 'endDate'));
     }
 
 }

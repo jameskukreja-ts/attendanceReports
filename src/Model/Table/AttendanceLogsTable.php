@@ -92,6 +92,7 @@ class AttendanceLogsTable extends Table
     }
     public function employeeAttendanceLogs($id,$startDate,$endDate){
         // $this->loadModel('AttendanceLogs');
+        
         $attendanceLogs=$this
                      ->findByEmployeeId($id)
                      ->where(['log_timestamp >='=>$startDate,'log_timestamp <'=>$endDate])
@@ -105,10 +106,11 @@ class AttendanceLogsTable extends Table
             $time=date('H:i:s' ,$timestamp) ; 
             return  ['date' => $date, 'time' => $time, 'timestamp' => $timestamp];   
         });
-        $new=$newCollection->groupBy('date')->map(function($value, $key){
+        $new=$newCollection->groupBy('date')->map(function($value, $key) use($id){
             $duration = (end($value)['timestamp'] -$value[0]['timestamp'])/3600;
-            return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2)];  
-        });
-        return $new->toArray();
+            return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2),'id'=>$id];  
+        })->toArray();
+        
+        return $new;
     }
 }

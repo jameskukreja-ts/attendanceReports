@@ -26,31 +26,11 @@
 <?= $this->Form->end() ?>
     
 
-    <?php if($report):?>
-    
+    <?php if($employeeDetails): ?>
         <fieldset>
-            <legend><?= __('Attendance Report : '.$startDate->i18nFormat('dd-MM-yyyy').' to '.$endDate->i18nFormat('dd-MM-yyyy')) ?></legend>
+            <legend><?= __('Aggregate Report : '.$startDate->i18nFormat('dd-MM-yyyy').' to '.$endDate->i18nFormat('dd-MM-yyyy')) ?></legend>
                    
-                <table class="vertical-table">
-                    
-                    <tr>
-                        <th scope="row"><?= __('Working Days') ?></th>
-                        <td id="workingDays"></td>
-                    </tr>
-                    <!-- <tr>
-                        <th scope="row"><?= __('Full Days') ?></th>
-                        <td id="fullDays"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><?= __('Half Days') ?></th>
-                        <td id="halfDays"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><?= __('Absent Days') ?></th>
-                        <td id="absentDays"></td>
-                    </tr> -->
-                    
-                </table>
+                
                    
                         <table cellpadding="0" cellspacing="0">
                             <thead>
@@ -60,92 +40,31 @@
                                     <th scope="col">Full Days</th>
                                     <th scope="col">Half Days</th>
                                     <th scope="col">Absent Days</th>
+                                    <th scope="col">Working Days</th>
                                    
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php   $s_no=1;
-                                        $date = $startDate;
-                                        foreach($report as $employee):
-                                        $halfdays=0;
-                                        $workingdays=0;
-                                        $absents=0;
-                                        $fulldays=0;
-                                        $data= [];
-                                        while($date <= $endDate):
-                                            
-                                            $in="-";
-                                            $out="-";
-                                            $duration="-";
-                                            $status="";
-                                            $weekEnd=date('l',strtotime($date));
-                                            if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                                                $in=$report[$date->i18nFormat('dd-MM-yyyy')]['in']['time'];
-                                                $out=$report[$date->i18nFormat('dd-MM-yyyy')]['out']['time'];
-                                                $duration=$report[$date->i18nFormat('dd-MM-yyyy')]['duration'];
-                                                if($duration<8&&$duration>=4){
-                                                    $status='Halfday';
-                                                    $halfdays++;
-                                                }elseif($duration<4){
-                                                    $status='Absent';
-                                                    $absents++;
-                                                }else{
-                                                     $status='Fullday';
-                                                     $fulldays++;
-                                                }
-                                            }
-                                            if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
-                                                $status='Holiday';    
-                                            }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
-                                                $status='Weekend';
-                                            }elseif(!isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                                                $status='Absent';
-                                                $absents++;
-                                            }
-                                    ?>
-
-
-                            <?php 
-                                $date = $date->modify('+1 day');
-                                endwhile; 
-                                $workingdays=$halfdays+$fulldays+$absents;
-                                $data[]=[
-                                    'absent'=>$absents,
-                                    'fullDays'=>$fulldays,
-                                    'halfDays'=>$halfdays
-
-                                ];
-
-                               
-                            ?>
+                            <?php $s_no=1; foreach($employeeDetails as $row):?>
                             <tr>
                                 <td><?=$s_no++?></td>
-                                <td><?= $date->i18nFormat('dd-MM-yyyy') ?></td>
-                                <td><?= $in ?></td>
-                                <td><?= $out ?></td>
-                                <td><?=$duration?></td>
-                                <td><?=$status?></td>
+                                <td><?= $row['name']?></td>
+                                <td><?= $row['report']['fulldays']?></td>
+                                <td><?= $row['report']['halfdays']?></td>
+                                <td><?= $row['report']['absents']?></td>
+                                <td><?= $row['report']['workingdays']?></td>
+                                
                             
                             </tr>
-                               
+                            <?php endforeach;?>   
                             </tbody>
-                        <?php endforeach?>
+                        
                         </table>
 
                     
         </fieldset> 
     <?php endif;?>
 </div>
- <script>
- var workingdays=<?php echo $workingdays?>;
- $('#workingDays').html(workingdays);
- var halfdays=<?php echo $halfdays?>;
- $('#halfDays').html(halfdays);
- var fulldays=<?php echo $fulldays?>;
- $('#fullDays').html(fulldays);
- var absentdays=<?php echo $absents?>;
- $('#absentDays').html(absentdays);            
-                                       
-</script>
+
 
 
