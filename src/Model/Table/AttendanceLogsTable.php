@@ -9,6 +9,8 @@ use Cake\I18n\FrozenTime;
 use Cake\I18n\Time;
 use Cake\I18n\Date;
 use Cake\Collection\Collection;
+use Cake\ORM\TableRegistry;
+use Cake\Core\Configure;
 
 /**
  * AttendanceLogs Model
@@ -91,10 +93,16 @@ class AttendanceLogsTable extends Table
         return $rules;
     }
     public function employeeAttendanceLogs($id,$startDate,$endDate){
-        // $this->loadModel('AttendanceLogs');
+         
+        $this->Settings = TableRegistry::get('Settings');
+        $settings=$this->Settings->find()->toArray();
+        $holidays=Configure::read('Holidays');
+        $holidays = new Collection($holidays); 
+        $holidays = $holidays->groupBy('date')->toArray();
+        $endDate1=$endDate->modify('+1 day');
         $attendanceLogs=$this
                      ->findByEmployeeId($id)
-                     ->where(['log_timestamp >='=>$startDate,'log_timestamp <'=>$endDate])
+                     ->where(['log_timestamp >='=>$startDate,'log_timestamp <'=>$endDate1])
                      ->order(['log_timestamp' => 'ASC'])
                      ->toArray(); 
         $collection = new Collection($attendanceLogs); 
@@ -105,10 +113,50 @@ class AttendanceLogsTable extends Table
             $time=date('H:i:s' ,$timestamp) ; 
             return  ['date' => $date, 'time' => $time, 'timestamp' => $timestamp];   
         });
+        
         $new=$newCollection->groupBy('date')->map(function($value, $key){
             $duration = (end($value)['timestamp'] -$value[0]['timestamp'])/3600;
-            return  ['in'=>$value[0],'out'=>end($value), 'duration' => round($duration, 2)];  
+            return  ['in'=>$value[0]['time'],'out'=>end($value)['time'], 'duration' => round($duration, 2)];  
         });
-        return $new->toArray();
+        $new=$new->toArray();
+        $date = $startDate;
+        $report=[];
+        while($date <= $endDate){
+            $status="";
+            $weekEnd=date('l',strtotime($date));
+            if(isset($new[$date->i18nFormat('dd-MM-yyyy')])){
+                if($new[$date->i18nFormat('dd-MM-yyyy')]['duration']<$settings[1]->value&&$new[$date->i18nFormat('dd-MM-yyyy')]['duration']>=$settings[0]->value){
+                    $status='Halfday';
+                }elseif($new[$date->i18nFormat('dd-MM-yyyy')]['duration']<$settings[0]->value){
+                    $status='Absent';
+                }else{
+                     $status='Fullday';
+                }
+                $report[]=[
+                    'date'=>$date->i18nFormat('dd-MM-yyyy'),
+                    'in'=>$new[$date->i18nFormat('dd-MM-yyyy')]['in'],
+                    'out'=>$new[$date->i18nFormat('dd-MM-yyyy')]['out'],
+                    'duration'=>$new[$date->i18nFormat('dd-MM-yyyy')]['duration'],
+                    'status'=>$status
+                ];
+            }else{
+                if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
+                    $status='Holiday';    
+                }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
+                    $status='Weekend';
+                }elseif(!isset($new[$date->i18nFormat('dd-MM-yyyy')])){
+                    $status='Absent';
+                }
+                $report[]=[
+                    'date'=>$date->i18nFormat('dd-MM-yyyy'),
+                    'in'=>'-',
+                    'out'=>'-',
+                    'duration'=>'-',
+                    'status'=>$status
+                ];
+            }  
+            $date = $date->modify('+1 day');
+        }
+        return $report;
     }
 }

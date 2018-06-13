@@ -231,16 +231,8 @@ class EmployeesController extends AppController
         }else{
             $employees = $this->Employees->find()->combine('office_id', 'full_name');
         }
-        $this->loadModel('Settings');
         $this->loadModel('AttendanceLogs');
-        $settings=$this->Settings->find()
-                                 ->map(function($value, $key){
-                                
-                                return [$value->name=>$value->value];
-                             })
-                             ->toArray();
-
-        //pr($settings);die;
+                                 
         $report=[];
         $holidays=Configure::read('Holidays');
         $holidays = new Collection($holidays); 
@@ -251,25 +243,19 @@ class EmployeesController extends AppController
             $data=$this->request->getData();
              
             $employee=$this->Employees->findByOfficeId($data['office_id'])->first();
-            $data['end_date']=new FrozenTime($data['end_date']);
-            $endDate = $data['end_date'];    
-            $data['end_date']=$data['end_date']->modify('+1 day');
-            $data['start_date']=new FrozenTime($data['start_date']);
-            $startDate =  $data['start_date'];
+            $endDate =new FrozenTime($data['end_date']);
+            $startDate =  new FrozenTime($data['start_date']);
 
             if($employee){
-                $report=$this->AttendanceLogs->employeeAttendanceLogs($employee->id,$data['start_date'],$data['end_date']);
+                $report=$this->AttendanceLogs->employeeAttendanceLogs($employee->id,$startDate,$endDate);
             }
-            $details=$this->Employees->employeeDetail($startDate,$endDate,$report);
-            
-            //pr($details);die;
-            $this->set(compact('holidays','details'));
             $this->set(compact('startDate', 'endDate'));
             $this->set(compact('employee'));
 
         }
+        $details=$this->Employees->employeeDetail($report);
+        $this->set(compact('report', 'employees','details'));
 
-        $this->set(compact('report', 'employees'));
        
     }
     

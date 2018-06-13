@@ -6,6 +6,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Core\Configure;
+use Cake\ORM\TableRegistry;
+use Cake\Collection\Collection;
 
 /**
  * Employees Model
@@ -103,41 +105,45 @@ class EmployeesTable extends Table
 
         return $rules;
     }
-    public function employeeDetail($startDate,$endDate,$report){
-        
-        $date = $startDate;
-        $halfdays=0;
-        $workingdays=0;
-        $absents=0;
+    public function employeeDetail($report){
+        $report = new Collection($report);
+        $statusCount=$report->countBy(function ($report) {
+            if($report['status']=='Fullday'){
+                return 'fulldays';
+            }elseif($report['status']=='Halfday'){
+                return 'halfdays';
+            }elseif($report['status']=='Absent'){
+                return 'absents';
+            }elseif($report['status']=='Weekend'){
+                return 'weekends';
+            }elseif($report['status']=='Holiday'){
+                return 'holidays';
+            }else{
+                return 'NoStatus';
+            }
+            
+        });
+        $statusCount=$statusCount->toArray();
         $fulldays=0;
-        while($date <= $endDate){
-            $status="";
-            $weekEnd=date('l',strtotime($date));
-            if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                if($report[$date->i18nFormat('dd-MM-yyyy')]['duration']<8&&$report[$date->i18nFormat('dd-MM-yyyy')]['duration']>=4){
-                    $status='Halfday';
-                    $halfdays++;
-                }elseif($report[$date->i18nFormat('dd-MM-yyyy')]['duration']<4){
-                    $status='Absent';
-                    $absents++;
-                }else{
-                     $status='Fullday';
-                     $fulldays++;
-                }
-            }
-            if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
-                $status='Holiday';    
-            }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
-                $status='Weekend';
-            }elseif(!isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                $status='Absent';
-                $absents++;
-            }
-
-        $date = $date->modify('+1 day');
+        $halfdays=0;
+        $absents=0;
+        if(isset($statusCount['fulldays'])){
+            $fulldays=$statusCount['fulldays'];
         }
-        $workingdays=$halfdays+$fulldays+$absents;
-        return ['workingdays'=>$workingdays,'fulldays'=>$fulldays,'halfdays'=>$halfdays,'absents'=>$absents];
-                               
+        if(isset($statusCount['halfdays'])){
+            $halfdays=$statusCount['halfdays'];
+        }
+        if(isset($statusCount['absents'])){
+            $absents=$statusCount['absents'];
+        }
+        
+        $details=[
+            'workingdays'=>$fulldays+$halfdays+$absents,
+            'fulldays'=>$fulldays,
+            'halfdays'=>$halfdays,
+            'absents'=>$absents
+            ];
+        //pr($details);die;
+        return $details;                    
     }
 }

@@ -38,7 +38,7 @@
     
         <fieldset>
             <legend><?= __('Attendance Report : '.$startDate->i18nFormat('dd-MM-yyyy').' to '.$endDate->i18nFormat('dd-MM-yyyy')) ?></legend>
-                   
+               
                 <table class="vertical-table">
                     <tr>
                         <th scope="row"><?= __('Name') ?></th>
@@ -50,19 +50,19 @@
                     </tr>
                     <tr>
                         <th scope="row"><?= __('Working Days') ?></th>
-                        <td id="workingDays"></td>
+                        <td id="workingDays"><?=$details['workingdays']?></td>
                     </tr>
                     <tr>
                         <th scope="row"><?= __('Full Days') ?></th>
-                        <td id="fullDays"></td>
+                        <td id="fullDays"><?=$details['fulldays']?></td>
                     </tr>
                     <tr>
                         <th scope="row"><?= __('Half Days') ?></th>
-                        <td id="halfDays"></td>
+                        <td id="halfDays"><?=$details['halfdays']?></td>
                     </tr>
                     <tr>
                         <th scope="row"><?= __('Absent Days') ?></th>
-                        <td id="absentDays"></td>
+                        <td id="absentDays"><?=$details['absents']?></td>
                     </tr>
                     
                 </table>
@@ -80,110 +80,27 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php   $s_no=1;
-                                        $date = $startDate;
-                                        $halfdays=0;
-                                        $workingdays=0;
-                                        $absents=0;
-                                        $fulldays=0;
-                                        while($date <= $endDate):
-                                            
-                                            $in="-";
-                                            $out="-";
-                                            $duration="-";
-                                            $status="";
-                                            $weekEnd=date('l',strtotime($date));
-                                            if(isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                                                $in=$report[$date->i18nFormat('dd-MM-yyyy')]['in']['time'];
-                                                $out=$report[$date->i18nFormat('dd-MM-yyyy')]['out']['time'];
-                                                $duration=$report[$date->i18nFormat('dd-MM-yyyy')]['duration'];
-                                                if($duration<8&&$duration>=4){
-                                                    $status='Halfday';
-                                                    $halfdays++;
-                                                }elseif($duration<4){
-                                                    $status='Absent';
-                                                    $absents++;
-                                                }else{
-                                                     $status='Fullday';
-                                                     $fulldays++;
-                                                }
-                                            }
-                                            if(isset($holidays[$date->i18nFormat('dd-MM-yyyy')])){
-                                                $status='Holiday';    
-                                            }elseif($weekEnd=='Saturday'||$weekEnd=='Sunday'){
-                                                $status='Weekend';
-                                            }elseif(!isset($report[$date->i18nFormat('dd-MM-yyyy')])){
-                                                $status='Absent';
-                                                $absents++;
-                                            }
-                                    ?>
+                                <?php $sNo=1;
+                                 foreach ($report as $key=>$row): ?>   
 
                                 <tr>
-                                    <td><?=$s_no++?></td>
-                                    <td><?= $date->i18nFormat('dd-MM-yyyy') ?></td>
-                                    <td><?= $in ?></td>
-                                    <td><?= $out ?></td>
-                                    <td><?=$duration?></td>
-                                    <td><?=$status?></td>
+                                    <td><?=$sNo++?></td>
+                                    <td><?= $row['date']?></td>
+                                    <td><?= $row['in'] ?></td>
+                                    <td><?= $row['out'] ?></td>
+                                    <td><?=$row['duration']?></td>
+                                    <td><?=$row['status']?></td>
                                     <td>
-                                    <?php if(isset($report[$date->i18nFormat('dd-MM-yyyy')])):?>
-                                    <a title = "Attendance logs" onclick = "displayModal('<?= $employee->id ?>','<?= $date->i18nFormat('dd-MM-yyyy') ?>')"><i title="Details" class="fa fa-info-circle fa-lg" id="myBtn"></i></a>
+                                    <?php if($row['in']!='-'):?>
+                                    <a title = "Attendance logs" onclick = "displayModal('<?= $employee->id ?>','<?= $row['date'] ?>')"><i title="Details" class="fa fa-info-circle fa-lg" id="myBtn"></i></a>
                                     <?php endif?>
                                     </td>
                                     
 
                                 </tr>
+                                <?php endforeach; ?>
 
-                            <?php 
-                                $date = $date->modify('+1 day');
-                                endwhile; 
-                                $workingdays=$halfdays+$fulldays+$absents;
-                               //pr($workingdays);die;
-                            ?>
-                               <!--  <?php $s_no=1;
-                                    $year=date('Y',strtotime($dates['start_date']));
-                                    $start_month=date('m',strtotime($dates['start_date']));
-                                    $start_month=ltrim($start_month,'0');
-                                    $end_month=date('m',strtotime($dates['end_date']));
-                                    $end_month=ltrim($end_month,'0');
-                                for ($i=$start_month; $i<=$end_month; $i++): ?>
-                                    <?php
-                                    $days=$months[$i];
-                                    
-                                    for ($j=1; $j<=$days; $j++): ?>
-                                       <tr>
-                                        
-                                        <?php 
-                                                $z=1;
-                                                $date=date_create($year."-".$i."-".$j);
-                                                $date=date_format($date,'d-m-Y');
-
-                                                if((strtotime($dates['start_date'])<=strtotime($date))&&(strtotime($dates['end_date'])>=strtotime($date))){
-                                                     echo '<td>'.$s_no++.'</td>';
-                                                    echo '<td>'.$date.'</td>';
-
-                                                }
-                                                     
-                                                 ?>
-                                       </tr>
-                                    <?php endfor; ?>
-                                <?php endfor; ?> -->
-
-                                <!--<?php $i=1; $date=null;
-                                 foreach ($report as $row): ?>
-                                <tr>
-                                    <td><?php echo $i++ ; ?></td>
-                                    <td><?php  echo $row['in']['date'] ; ?></td>
-                                    <td><?php echo $row['in']['time'] ; ?></td>
-                                    <td><?php echo $row['out']['time'] ; ?></td>
-                                    <td><?php echo $row['duration'] ?></td>
-                                    <td><!--<?= $this->Html->link(__('Details'), ['action' => 'view', $row['in']['date'],$employee->id]) ?>-->
-                        <!--            <?php $date= $row['in']['date']; ?>
-                                    <a title = "Attendance logs" onclick = "displayModal('<?= $employee->id ?>','<?= $row['in']['date'] ?>')"><i title="Details" class="fa fa-info-circle fa-lg" id="myBtn"></i></a>
-                                    </td>
-                                
-                                </tr>
-                                <?php endforeach; ?>-->
+                               
                             </tbody>
                         </table>
 
@@ -229,14 +146,7 @@
 
 </div>
  <script>
- var workingdays=<?php echo $workingdays?>;
- $('#workingDays').html(workingdays);
- var halfdays=<?php echo $halfdays?>;
- $('#halfDays').html(halfdays);
- var fulldays=<?php echo $fulldays?>;
- $('#fullDays').html(fulldays);
- var absentdays=<?php echo $absents?>;
- $('#absentDays').html(absentdays);            
+            
                                        
 // Get the modal
 var modal = document.getElementById('myModal');
