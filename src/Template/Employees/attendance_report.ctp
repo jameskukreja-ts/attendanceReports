@@ -7,7 +7,7 @@
 
 <div class="employees form large-10 medium-8 columns content" style="margin:0px 0px 0px 100px;">
    
-<?= $this->Form->create('') ?>
+<?= $this->Form->create(null,['url' => ['controller'=>'Employees','action' => 'attendanceReport']]) ?>
     <table cellpadding="0" cellspacing="0">
         <tr>
                 <td>
@@ -27,17 +27,31 @@
                 <td>
                     <?= $this->Form->button(__('Submit')) ?>
                 </td>
+                <?php if(!$loggedIn):?>
+                <td>
+                    <?= $this->Html->link('Back to Login',['controller'=>'Users','action' => 'login'],['class'=>'button right']) ?>
+                 </td>   
+                        
+                <?php endif;?>
             
         </tr>
+        <?php if($report):?>
+            
+        <?php endif;?>
     </table>
     
 <?= $this->Form->end() ?>
     
 
     <?php if($report):?>
-    
-        <fieldset>
-            <legend><?= __('Attendance Report : '.$startDate->i18nFormat('dd-MM-yyyy').' to '.$endDate->i18nFormat('dd-MM-yyyy')) ?></legend>
+       <fieldset>
+
+            <legend>
+                <?= __('Attendance Report : '.$startDate->i18nFormat('dd-MM-yyyy').' to '.$endDate->i18nFormat('dd-MM-yyyy')) ?>
+                <?php if($loggedIn):?>
+                <?=$this->Html->link('Go to Aggregate Report',['controller'=>'Employees','action' => 'aggregateReport',$startDate->i18nFormat('dd-MM-yyyy'),$endDate->i18nFormat('dd-MM-yyyy')],['class'=>'right']);?>
+                <?php endif;?>
+            </legend>
                
                 <table class="vertical-table">
                     <tr>
@@ -147,7 +161,7 @@
 </div>
  <script>
             
-                                       
+var siteUrl = $('#baseUrl').val();
 // Get the modal
 var modal = document.getElementById('myModal');
 
@@ -159,11 +173,13 @@ var span = document.getElementsByClassName("close")[0];
 
 // When the user clicks the button, open the modal 
 function displayModal(employeeId,date) {
+
     modal.style.display = "block";
     console.log(employeeId+','+date)
     $('#modalDate').html(date);
+
     $.ajax({  
-            url: 'http://localhost/attendanceReports/api/Employees/getLogsByDate/'+employeeId+'/'+date,
+            url: siteUrl+'/api/Employees/getLogsByDate/'+employeeId+'/'+date,
             headers: { 'Accept': 'application/json', 'content-type': 'application/json' },
             type: 'GET', 
             success: function(result) {

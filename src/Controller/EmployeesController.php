@@ -224,43 +224,75 @@ class EmployeesController extends AppController
         $this->set(compact('attendanceCsv'));
     }
 
-    public function attendanceReport(){
-
+    public function attendanceReport($id=null,$start_date=null,$end_date=null){
         if(!$this->Auth->user()){
             $this->viewBuilder()->layout('login-default');
         }else{
             $employees = $this->Employees->find()->combine('office_id', 'full_name');
         }
         $this->loadModel('AttendanceLogs');
-                                 
+        $loggedIn= $this->Auth->user();                       
         $report=[];
         $holidays=Configure::read('Holidays');
         $holidays = new Collection($holidays); 
         $holidays = $holidays->groupBy('date')->toArray();
         
-        if ($this->request->is('post')) {
-
-            $data=$this->request->getData();
+        if ($this->request->is('post')||$id) {
+            if($id){
+                $data=[
+                    'office_id'=>$id,
+                    'start_date'=>$start_date,
+                    'end_date'=>$end_date
+                ];
+            }elseif($this->request->is('post')){
+                $data=$this->request->getData();  
+            }
+            
              
             $employee=$this->Employees->findByOfficeId($data['office_id'])->first();
-            $endDate =new FrozenTime($data['end_date']);
-            $startDate =  new FrozenTime($data['start_date']);
-
             if($employee){
-                $report=$this->AttendanceLogs->employeeAttendanceLogs($employee->id,$startDate,$endDate);
+                $endDate =new FrozenTime($data['end_date']);
+                $startDate =  new FrozenTime($data['start_date']);
+                $last=FrozenTime::now();
+
+                $first=$this->AttendanceLogs->findByEmployeeId($employee->id)->order(['log_timestamp' => 'ASC'])->extract('log_timestamp')->first();
+                
+                if(!$first){
+                    $this->Flash->error(__('Data is not available.'));
+        
+                }elseif($startDate>$endDate){
+                    $this->Flash->error(__('Invalid Date Range.'));
+                }else{
+                    // if($startDate<$first){
+                    //     $startDate = $first;
+                    //     $this->Flash->success(__('Date Range modified as data is not available.'));
+                    // }
+                    if($endDate>$last){
+                        $endDate = $last;
+                        $this->Flash->success(__('Date Range modified as data is not available.'));
+                    }
+                    
+                    $report=$this->AttendanceLogs->employeeAttendanceLogs($employee->id,$startDate,$endDate);
+                   
+                }
+
+            }else{
+                $this->Flash->error(__('Invalid Office ID.'));
             }
+            
             $this->set(compact('startDate', 'endDate'));
             $this->set(compact('employee'));
 
         }
         $details=$this->Employees->employeeDetail($report);
-        $this->set(compact('report', 'employees','details'));
+        $this->set(compact('report', 'employees','details','loggedIn'));
 
        
     }
     
     public function settings(){
         $this->loadModel('Settings');
+        $settingValue=$this->Settings->find()->combine('name','value')->toArray();
         $data = array();
         $data=$this->request->getData();
         if ($this->request->is('post')) {
@@ -274,37 +306,50 @@ class EmployeesController extends AppController
                  'value'=>$data['full_day_hours']  
                 ]
             ];
-            // pr($data);
-            // pr($settings); die();
+
             $settings=$this->Settings->patchEntities($data,$settings);
-            // pr($settings);die;
+            if($data['half_day_hours']>=$data['full_day_hours']){
+                $this->Flash->error(__('Half Day Hrs. should be less than Full Day Hrs.'));
+                return $this->redirect(['controller'=>'Employees','action'=>'settings']);
+            }
             if(!$this->Settings->saveMany($settings)){
                 $this->Flash->error(__('Settings could not be saved'));
+            }else{
+                $this->Flash->success(__('Settings saved successfully'));
             }
-            $this->Flash->success(__('Settings saved successfully'));
+            
+            return $this->redirect(['controller'=>'Employees','action'=>'settings']);
         }
+        $this->set(compact('settingValue'));
+
     }
-    public function aggregateReport(){
+    public function aggregateReport($start_date=null,$end_date=null){
         $this->loadModel('AttendanceLogs');
         
         $report=[];
-        $holidays=Configure::read('Holidays');
-        $holidays = new Collection($holidays); 
-        $holidays = $holidays->groupBy('date')->toArray();
         $employeeDetails=[];
-        if ($this->request->is('post')) {
+        if ($this->request->is('post')||$start_date) {
 
-            $data=$this->request->getData();
+            if($start_date){
+                $data=[
+                    'start_date'=>$start_date,
+                    'end_date'=>$end_date
+                ];
+            }elseif($this->request->is('post')){
+                $data=$this->request->getData();  
+            }
              
-            $employees=$this->Employees->find()->toArray();
+            $employees=$this->Employees->find()->order(['first_name' => 'ASC'])->toArray();
             
             $endDate=new FrozenTime($data['end_date']);
             $startDate=new FrozenTime($data['start_date']);
-
-            if($employees){
+            if($startDate>$endDate){
+                    $this->Flash->error(__('Invalid Date Range.'));
+                }
+            elseif($employees){
                 foreach ($employees as $employee) {
                     $report=$this->AttendanceLogs->employeeAttendanceLogs($employee->id,$startDate,$endDate);
-                    $employeeDetails[]=['id'=>$employee->id,'name'=>$employee->full_name,'report'=>$this->Employees->employeeDetail($report)];
+                    $employeeDetails[]=['id'=>$employee->office_id,'name'=>$employee->full_name,'report'=>$this->Employees->employeeDetail($report)];
                 }
             }
             

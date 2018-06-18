@@ -48,7 +48,8 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->Flash->render() ?>
     
     <div class="container clearfix">
-        <?= $this->fetch('content') ?>
+                <?=  $this->Form->hidden('baseUrl',['id'=>'baseUrl','value'=>$this->Url->build('/', true)]); ?>
+         <?= $this->fetch('content') ?>
     </div>
 
     <footer>

@@ -7,7 +7,7 @@
 
 <div class="employees form large-10 medium-8 columns content" style="margin:0px 0px 0px 100px;">
    
-<?= $this->Form->create('') ?>
+<?= $this->Form->create(null,['url' => ['controller'=>'Employees','action' => 'aggregateReport']]) ?>
     <table cellpadding="0" cellspacing="0">
         <tr>
                 
@@ -28,6 +28,7 @@
 
     <?php if($employeeDetails): ?>
         <fieldset>
+
             <legend><?= __('Aggregate Report : '.$startDate->i18nFormat('dd-MM-yyyy').' to '.$endDate->i18nFormat('dd-MM-yyyy')) ?></legend>
                    
                 
@@ -48,7 +49,8 @@
                             <?php $s_no=1; foreach($employeeDetails as $row):?>
                             <tr>
                                 <td><?=$s_no++?></td>
-                                <td><?= $row['name']?></td>
+                                <td><?php echo $this->Html->link($row['name'],['controller'=>'Employees','action' => 'attendanceReport',$row['id'],$startDate->i18nFormat('dd-MM-yyyy'),$endDate->i18nFormat('dd-MM-yyyy')]);?></td>
+                                <!-- <td><?= $row['name']?></td> -->
                                 <td><?= $row['report']['fulldays']?></td>
                                 <td><?= $row['report']['halfdays']?></td>
                                 <td><?= $row['report']['absents']?></td>

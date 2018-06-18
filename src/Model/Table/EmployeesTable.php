@@ -142,7 +142,7 @@ class EmployeesTable extends Table
             'fulldays'=>$fulldays,
             'halfdays'=>$halfdays,
             'absents'=>$absents
-            ];
+        ];
         //pr($details);die;
         return $details;                    
     }

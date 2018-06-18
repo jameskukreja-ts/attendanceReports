@@ -65,7 +65,7 @@ class SettingsTable extends Table
             ->notEmpty('label');
 
         $validator
-            ->integer('value')
+            ->decimal('value')
             ->requirePresence('value', 'create')
             ->notEmpty('value');
 

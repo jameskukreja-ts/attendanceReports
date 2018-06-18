@@ -56,7 +56,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     </nav>
     <?= $this->element('side-nav') ?>
     <?= $this->Flash->render() ?>
+        <?=  $this->Form->hidden('baseUrl',['id'=>'baseUrl','value'=>$this->Url->build('/', true)]); ?>
     <div class="container clearfix">
+        
         <?= $this->fetch('content') ?>
     </div>
     <footer>

@@ -96,17 +96,18 @@ class AttendanceLogsTable extends Table
 
          
         $this->Settings = TableRegistry::get('Settings');
-        $settings=$this->Settings->find()->toArray();
+        $settings=$this->Settings->find()->combine('name','value')->toArray();
         $holidays=Configure::read('Holidays');
         $holidays = new Collection($holidays); 
         $holidays = $holidays->groupBy('date')->toArray();
-        $endDate1=$endDate->modify('+1 day');
 
+        $endDate1=$endDate->modify('+1 day');
         $attendanceLogs=$this
                      ->findByEmployeeId($id)
                      ->where(['log_timestamp >='=>$startDate,'log_timestamp <'=>$endDate1])
                      ->order(['log_timestamp' => 'ASC'])
                      ->toArray(); 
+        // pr($attendanceLogs);die;
         $collection = new Collection($attendanceLogs); 
         $newCollection = $collection->map(function($value, $key){
 
@@ -121,15 +122,16 @@ class AttendanceLogsTable extends Table
             return  ['in'=>$value[0]['time'],'out'=>end($value)['time'], 'duration' => round($duration, 2)];  
         });
         $new=$new->toArray();
+
         $date = $startDate;
         $report=[];
         while($date <= $endDate){
             $status="";
             $weekEnd=date('l',strtotime($date));
             if(isset($new[$date->i18nFormat('dd-MM-yyyy')])){
-                if($new[$date->i18nFormat('dd-MM-yyyy')]['duration']<$settings[1]->value&&$new[$date->i18nFormat('dd-MM-yyyy')]['duration']>=$settings[0]->value){
+                if($new[$date->i18nFormat('dd-MM-yyyy')]['duration']<$settings['Full']&&$new[$date->i18nFormat('dd-MM-yyyy')]['duration']>=$settings['Half']){
                     $status='Halfday';
-                }elseif($new[$date->i18nFormat('dd-MM-yyyy')]['duration']<$settings[0]->value){
+                }elseif($new[$date->i18nFormat('dd-MM-yyyy')]['duration']<$settings['Half']){
                     $status='Absent';
                 }else{
                      $status='Fullday';
@@ -159,6 +161,7 @@ class AttendanceLogsTable extends Table
             }  
             $date = $date->modify('+1 day');
         }
+        //pr($report);die;
         return $report;
 
     }
