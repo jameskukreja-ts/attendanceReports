@@ -45,6 +45,18 @@ use Cake\Routing\Route\DashedRoute;
  *
  */
 Router::defaultRouteClass(DashedRoute::class);
+// $routes->fallbacks(DashedRoute::class);
+// });
+
+Router::prefix('api', function ($routes) {
+    // Because you are in the admin scope,
+    // you do not need to include the /admin prefix
+    // or the admin route element.
+    //die('asfas');
+    $routes->connect('/:controller/:action/*', ['controller' => ':controller', 'action' => ':action']);
+    $routes->fallbacks(InflectedRoute::class);
+
+});
 
 Router::scope('/', function (RouteBuilder $routes) {
     /**
@@ -52,7 +64,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      * its action called 'display', and we pass a param to select the view file
      * to use (in this case, src/Template/Pages/home.ctp)...
      */
-    $routes->connect('/', ['controller' => 'Pages', 'action' => 'display', 'home']);
+    $routes->connect('/', ['controller' => 'Users', 'action' => 'login', 'login']);
 
     /**
      * ...and connect the rest of 'Pages' controller's URLs.

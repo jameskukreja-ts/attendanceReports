@@ -24,15 +24,12 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         <?= $cakeDescription ?>:
         <?= $this->fetch('title') ?>
     </title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+    
     <?= $this->Html->meta('icon') ?>
 
     <?= $this->Html->css('base.css') ?>
     <?= $this->Html->css('style.css') ?>
-
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
-    
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.css">
-  
     <?= $this->Html->script('jquery-3.3.1.min'); ?>
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
@@ -40,30 +37,24 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 </head>
 <body>
     <nav class="top-bar expanded" data-topbar role="navigation">
-        <ul class="title-area large-3 medium-4 columns">
+        <ul class="title-area large-12 medium-4 columns">
             <li class="name">
-                <h1><a href=""><?= $this->fetch('title') ?></a></h1>
+                
             </li>
         </ul>
-        <div class="top-bar-section">
-            <ul class="right">
-
-                <?= $this->html->link(__('Logout'), ['controller' => 'Users', 'action' => 'logout'],['class'=>'button btn-warning']); ?>
-                <!-- <li><a target="_blank" href="https://book.cakephp.org/3.0/">Documentation</a></li>
-                <li><a target="_blank" href="https://api.cakephp.org/3.0/">API</a></li> -->
-            </ul>
-        </div>
-    </nav>
-    <?= $this->element('side-nav') ?>
-    <?= $this->Flash->render() ?>
-        <?=  $this->Form->hidden('baseUrl',['id'=>'baseUrl','value'=>$this->Url->build('/', true)]); ?>
-    <div class="container clearfix">
         
-        <?= $this->fetch('content') ?>
+    </nav>
+   
+    <?= $this->Flash->render() ?>
+    
+    <div class="container clearfix">
+                <?=  $this->Form->hidden('baseUrl',['id'=>'baseUrl','value'=>$this->Url->build('/', true)]); ?>
+         <?= $this->fetch('content') ?>
     </div>
+
     <footer>
     </footer>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    
 </body>
 </html>
