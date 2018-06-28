@@ -226,7 +226,7 @@ class EmployeesController extends AppController
 
     public function attendanceReport($id=null,$start_date=null,$end_date=null){
         if(!$this->Auth->user()){
-            $this->viewBuilder()->layout('login-default');
+            $this->viewBuilder()->setLayout('login-default');
         }else{
             $employees = $this->Employees->find()->combine('office_id', 'full_name');
         }

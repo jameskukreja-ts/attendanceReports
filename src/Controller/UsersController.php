@@ -114,7 +114,7 @@ class UsersController extends AppController
 
     public function login()
 {
-    $this->viewBuilder()->layout('login-default');
+    $this->viewBuilder()->setLayout('login-default');
     if($this->Auth->user()){
         return $this->redirect($this->Auth->redirectUrl(['controller' => 'Employees', 'action' => 'index']));
            

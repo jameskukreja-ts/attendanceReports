@@ -9,7 +9,7 @@
     <?= $this->Form->create($attendanceCsv, ['class' => 'form-horizontal', 'enctype'=>"multipart/form-data"]) ?>
     
     
-    <?= $this->Form->input('file_name', ['label' => false,'required' => true,['class' => 'form-control'],'type' => "file",'id'=>'imgChange','onchange'=>"checkfile(this);"]); ?>
+    <?= $this->Form->control('file_name', ['label' => false,'required' => true,['class' => 'form-control'],'type' => "file",'id'=>'imgChange','onchange'=>"checkfile(this);"]); ?>
         
     <?= $this->Form->button(__('Submit'),['class'=>'left'],array('onlcick' => '')) ?>
    
